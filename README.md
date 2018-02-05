@@ -1,2 +1,2 @@
 # Playlist-editor
-Opens iTunes's txt/m3u/xspf playlists. Creates m3u/xspf playlists.
+Opens iTunes's txt/m3u/xspf playlists. Creates m3u/xspf playlists. (Windows/Linux)
