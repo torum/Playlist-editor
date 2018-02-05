@@ -1,0 +1,236 @@
+object frmMain: TfrmMain
+  Left = 949
+  Height = 493
+  Top = 1072
+  Width = 1182
+  Caption = ' Playlist Editer'
+  ClientHeight = 468
+  ClientWidth = 1182
+  Color = clWhite
+  Constraints.MinHeight = 120
+  Constraints.MinWidth = 240
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '1.8.0.6'
+  object PanelContents: TPanel
+    Left = 0
+    Height = 436
+    Top = 0
+    Width = 1182
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 436
+    ClientWidth = 1182
+    TabOrder = 0
+    object VirtualStringTree1: TVirtualStringTree
+      Left = 0
+      Height = 426
+      Top = 0
+      Width = 1182
+      Align = alClient
+      BorderStyle = bsNone
+      DefaultNodeHeight = 20
+      DefaultText = 'Node'
+      Header.AutoSizeIndex = 1
+      Header.Columns = <      
+        item
+          MaxWidth = 120
+          MinWidth = 52
+          Options = [coAllowClick, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coSmartResize, coAllowFocus, coUseCaptionAlignment]
+          Position = 0
+          Width = 52
+        end      
+        item
+          CaptionAlignment = taCenter
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus, coUseCaptionAlignment]
+          Position = 1
+          Width = 1130
+        end      
+        item
+          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAutoSpring, coAllowFocus]
+          Position = 2
+        end>
+      Header.DefaultHeight = 36
+      Header.Font.Style = [fsBold]
+      Header.Height = 36
+      Header.MainColumn = 1
+      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoFullRepaintOnResize, hoHeaderClickAutoSort]
+      Header.SortColumn = 0
+      Header.Style = hsFlatButtons
+      PopupMenu = PopupMenu1
+      TabOrder = 0
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+      TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
+      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
+      OnBeforeItemErase = VirtualStringTree1BeforeItemErase
+      OnChange = VirtualStringTree1Change
+      OnCompareNodes = VirtualStringTree1CompareNodes
+      OnFocusChanged = VirtualStringTree1FocusChanged
+      OnFreeNode = VirtualStringTree1FreeNode
+      OnGetText = VirtualStringTree1GetText
+      OnGetNodeDataSize = VirtualStringTree1GetNodeDataSize
+    end
+    object ProgressBar1: TProgressBar
+      Left = 0
+      Height = 10
+      Top = 426
+      Width = 1182
+      Align = alBottom
+      Anchors = [akTop, akRight, akBottom]
+      Color = clWhite
+      Constraints.MaxHeight = 6
+      ParentColor = False
+      Smooth = True
+      TabOrder = 1
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 32
+    Top = 436
+    Width = 1182
+    AutoSize = False
+    Color = clInfoBk
+    Panels = <    
+      item
+        Alignment = taCenter
+        Width = 48
+      end    
+      item
+        Width = 240
+      end>
+    ParentColor = False
+    SimplePanel = False
+    SizeGrip = False
+    Visible = False
+  end
+  object MainMenu1: TMainMenu
+    left = 232
+    top = 8
+    object MenuItem1: TMenuItem
+      Caption = '&File'
+      object MenuItemNew: TMenuItem
+        Caption = '&New'
+        object MenuItemSelectFiles: TMenuItem
+          Action = actNewFile
+        end
+      end
+      object MenuItemOpen: TMenuItem
+        Caption = '&Open'
+        object MenuItemOpenTxt: TMenuItem
+          Action = actOpenTxt
+        end
+        object MenuItemOpenM3u: TMenuItem
+          Action = actOpenM3u
+        end
+        object MenuItemOpenXspf: TMenuItem
+          Action = actOpenXSPF
+        end
+      end
+      object MenuItemSaveAs: TMenuItem
+        Caption = '&Save As'
+        object MenuItemSaveTxt: TMenuItem
+          Action = actSaveiTunesTxt
+        end
+        object MenuItemSaveM3u: TMenuItem
+          Action = actSaveM3u
+        end
+        object MenuItemSaveXspf: TMenuItem
+          Action = actSaveXSPF
+          Caption = '.xspf'
+        end
+      end
+      object MenuItem12: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemQuit: TMenuItem
+        Caption = '&Quit'
+        OnClick = MenuItemQuitClick
+      end
+    end
+    object MenuItem2: TMenuItem
+      Caption = '&Edit'
+      object MenuItemReplace: TMenuItem
+        Action = actReplace
+      end
+      object MenuItem3: TMenuItem
+        Caption = 'Convert to file:// URI scheme'
+      end
+      object MenuItem4: TMenuItem
+        Caption = 'Convert to local system path'
+      end
+    end
+    object MenuItemHelp: TMenuItem
+      Caption = '&Help'
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    left = 400
+    top = 8
+  end
+  object PopupMenu1: TPopupMenu
+    left = 184
+    top = 208
+    object MenuItemVTVCopySelected: TMenuItem
+      Caption = 'Copy'
+      OnClick = MenuItemVTVCopySelectedClick
+    end
+  end
+  object SaveDialog1: TSaveDialog
+    FilterIndex = 0
+    Options = [ofPathMustExist, ofEnableSizing, ofDontAddToRecent, ofViewDetail]
+    left = 512
+    top = 8
+  end
+  object TimerHideStatusbar: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = TimerHideStatusbarTimer
+    left = 548
+    top = 206
+  end
+  object ActionList1: TActionList
+    left = 136
+    top = 8
+    object actNewFile: TAction
+      Caption = 'Select files'
+      OnExecute = actNewFileExecute
+    end
+    object actOpenTxt: TAction
+      Caption = '.txt (iTunes)'
+      OnExecute = actOpenTxtExecute
+    end
+    object actOpenM3u: TAction
+      Caption = '.m3u, .m3u8'
+      OnExecute = actOpenM3uExecute
+    end
+    object actOpenXSPF: TAction
+      Caption = '.xspf'
+      OnExecute = actOpenXSPFExecute
+    end
+    object actSaveiTunesTxt: TAction
+      Caption = '.txt (iTunes)'
+      OnExecute = actSaveiTunesTxtExecute
+    end
+    object actSaveM3u: TAction
+      Caption = '.m3u (UTF-8)'
+      OnExecute = actSaveM3uExecute
+    end
+    object actSaveXSPF: TAction
+      Caption = 'actSaveXSPF'
+      OnExecute = actSaveXSPFExecute
+    end
+    object actReplace: TAction
+      Caption = 'Find && Replace'
+      OnExecute = actReplaceExecute
+    end
+  end
+end
