@@ -6,4 +6,4 @@ format convert:
 .m3u <-> .xspf
 
 Editing:
-Add, Remove, Rearrange order, Find & Replace
+Add, Remove, Rearrange order, Find & Replace path/uri.
