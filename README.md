@@ -1,4 +1,4 @@
-# Playlist-editor/converter (Windows/Linux)
+# Playlist editor/converter (Windows/Linux)
 Opens iTunes/m3u/xspf playlists, create new and saves as m3u/xspf playlists. 
 
 Format convert:
