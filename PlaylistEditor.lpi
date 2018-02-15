@@ -12,9 +12,17 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <DpiAware Value="True"/>
+        <TextName Value="witha.PlaylistEditer.PlaylistEditer"/>
+        <TextDesc Value="Playlist editor/converter"/>
       </XPManifest>
       <Icon Value="0"/>
     </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="1"/>
+      <StringTable ProductVersion="0.0.0.0"/>
+    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
     </BuildModes>

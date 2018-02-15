@@ -20,9 +20,9 @@ type
     BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
     ButtonCancel: TButton;
-    ButtonOK: TButton;
-    Edit1: TEdit;
-    Edit2: TEdit;
+    ButtonReplace: TButton;
+    EditFind: TEdit;
+    EditReplaceWith: TEdit;
     Image1: TImage;
     Image2: TImage;
     Label1: TLabel;
@@ -31,30 +31,26 @@ type
     Panel1: TPanel;
     StaticText1: TStaticText;
     StaticText10: TStaticText;
-    StaticText2: TStaticText;
     StaticText3: TStaticText;
-    StaticText4: TStaticText;
     StaticText5: TStaticText;
     StaticText6: TStaticText;
-    StaticText7: TStaticText;
     StaticText8: TStaticText;
     StaticText9: TStaticText;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
     TabSheetReplace: TTabSheet;
-    TabSheet5: TTabSheet;
-    TabSheet6: TTabSheet;
-    TabSheet7: TTabSheet;
     TabSheetWelcome: TTabSheet;
     TabSheetAbout: TTabSheet;
     procedure BitBtn3Click(Sender: TObject);
     procedure BitBtn4Click(Sender: TObject);
     procedure BitBtn5Click(Sender: TObject);
     procedure BitBtn6Click(Sender: TObject);
+    procedure ButtonReplaceClick(Sender: TObject);
+    procedure EditFindChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
+    procedure FormShow(Sender: TObject);
+    procedure StaticText6Click(Sender: TObject);
   private
 
   public
@@ -106,6 +102,17 @@ begin
   self.ModalResult:=mrCancel;
 end;
 
+procedure TfrmOptions.FormShow(Sender: TObject);
+begin
+  ButtonReplace.Enabled:=false;
+
+end;
+
+procedure TfrmOptions.StaticText6Click(Sender: TObject);
+begin
+
+end;
+
 procedure TfrmOptions.BitBtn3Click(Sender: TObject);
 begin
   closeAction := frmMain.actOpenTxt;
@@ -128,6 +135,30 @@ procedure TfrmOptions.BitBtn6Click(Sender: TObject);
 begin
   closeAction := frmMain.actNewFile;
   self.ModalResult:=mrOK;
+end;
+
+procedure TfrmOptions.ButtonReplaceClick(Sender: TObject);
+begin
+  self.ModalResult:=mrOK;
+end;
+
+procedure TfrmOptions.EditFindChange(Sender: TObject);
+begin
+  if EditFind.Text <> '' then begin
+    ButtonReplace.Enabled:=true;
+  end else
+  begin
+    ButtonReplace.Enabled:=false;
+  end;
+end;
+
+procedure TfrmOptions.FormActivate(Sender: TObject);
+begin
+  if EditFind.Visible then begin
+    EditFind.SelectAll;
+    EditFind.SetFocus;
+  end;
+
 end;
 
 

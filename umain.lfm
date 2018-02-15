@@ -1,8 +1,9 @@
 object frmMain: TfrmMain
-  Left = 949
-  Height = 493
-  Top = 1072
+  Left = 362
+  Height = 468
+  Top = 707
   Width = 1182
+  ActiveControl = VirtualStringTree1
   Caption = ' Playlist Editer'
   ClientHeight = 468
   ClientWidth = 1182
@@ -18,7 +19,7 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.8.0.6'
+  Visible = False
   object PanelContents: TPanel
     Left = 0
     Height = 436
@@ -38,45 +39,55 @@ object frmMain: TfrmMain
       BorderStyle = bsNone
       DefaultNodeHeight = 20
       DefaultText = 'Node'
+      DragOperations = [doMove]
       Header.AutoSizeIndex = 1
       Header.Columns = <      
         item
           MaxWidth = 120
           MinWidth = 52
-          Options = [coAllowClick, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coSmartResize, coAllowFocus, coUseCaptionAlignment]
+          Options = [coEnabled, coParentBidiMode, coParentColor, coVisible, coFixed, coUseCaptionAlignment]
           Position = 0
-          Width = 52
+          Width = 62
         end      
         item
           CaptionAlignment = taCenter
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus, coUseCaptionAlignment]
+          MinWidth = 300
+          Options = [coAllowClick, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus, coUseCaptionAlignment]
           Position = 1
-          Width = 1130
+          Width = 1120
         end      
         item
-          Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAutoSpring, coAllowFocus]
+          MaxWidth = 80
+          Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAutoSpring]
           Position = 2
+          Text = 'idx'
+          Width = 52
         end>
       Header.DefaultHeight = 36
       Header.Font.Style = [fsBold]
       Header.Height = 36
-      Header.MainColumn = 1
-      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoFullRepaintOnResize, hoHeaderClickAutoSort]
+      Header.Options = [hoAutoResize, hoColumnResize, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoFullRepaintOnResize, hoHeaderClickAutoSort]
       Header.SortColumn = 0
       Header.Style = hsFlatButtons
       PopupMenu = PopupMenu1
       TabOrder = 0
-      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoChangeScale]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
-      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
+      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect]
+      TreeOptions.StringOptions = [toSaveCaptions]
       OnBeforeItemErase = VirtualStringTree1BeforeItemErase
       OnChange = VirtualStringTree1Change
+      OnColumnClick = VirtualStringTree1ColumnClick
       OnCompareNodes = VirtualStringTree1CompareNodes
+      OnDragAllowed = VirtualStringTree1DragAllowed
+      OnDragOver = VirtualStringTree1DragOver
+      OnDragDrop = VirtualStringTree1DragDrop
       OnFocusChanged = VirtualStringTree1FocusChanged
       OnFreeNode = VirtualStringTree1FreeNode
       OnGetText = VirtualStringTree1GetText
       OnGetNodeDataSize = VirtualStringTree1GetNodeDataSize
+      OnHeaderClick = VirtualStringTree1HeaderClick
     end
     object ProgressBar1: TProgressBar
       Left = 0
@@ -102,7 +113,7 @@ object frmMain: TfrmMain
     Panels = <    
       item
         Alignment = taCenter
-        Width = 48
+        Width = 82
       end    
       item
         Width = 240
@@ -135,17 +146,43 @@ object frmMain: TfrmMain
           Action = actOpenXSPF
         end
       end
+      object MenuItem10: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem11: TMenuItem
+        Caption = 'Convert to'
+        object MenuItem14: TMenuItem
+          Action = actConvertToM3U
+        end
+        object MenuItem15: TMenuItem
+          Action = actConvertToXSPF
+        end
+      end
+      object MenuItem13: TMenuItem
+        Caption = '-'
+      end
       object MenuItemSaveAs: TMenuItem
         Caption = '&Save As'
         object MenuItemSaveTxt: TMenuItem
           Action = actSaveiTunesTxt
         end
-        object MenuItemSaveM3u: TMenuItem
+        object MenuItem5: TMenuItem
           Action = actSaveM3u
+          Visible = False
+        end
+        object MenuItemSaveM3u: TMenuItem
+          Action = actSaveM3uAnsi
+        end
+        object MenuItem4: TMenuItem
+          Action = actSaveM3uBOM
+          Caption = 'M3U (.m3u) UTF-8 '
+        end
+        object MenuItem3: TMenuItem
+          Action = actSaveM3u8
+          Caption = 'M3U (.m3u8) UTF-8'
         end
         object MenuItemSaveXspf: TMenuItem
           Action = actSaveXSPF
-          Caption = '.xspf'
         end
       end
       object MenuItem12: TMenuItem
@@ -153,23 +190,50 @@ object frmMain: TfrmMain
       end
       object MenuItemQuit: TMenuItem
         Caption = '&Quit'
+        ShortCut = 16465
         OnClick = MenuItemQuitClick
       end
     end
     object MenuItem2: TMenuItem
       Caption = '&Edit'
       object MenuItemReplace: TMenuItem
-        Action = actReplace
+        Action = actReplaceAll
       end
-      object MenuItem3: TMenuItem
-        Caption = 'Convert to file:// URI scheme'
+      object MenuItem17: TMenuItem
+        Caption = '-'
+        Visible = False
       end
-      object MenuItem4: TMenuItem
-        Caption = 'Convert to local system path'
+      object MenuItem18: TMenuItem
+        Action = actCopySelectedPath
+        Visible = False
+      end
+      object MenuItem20: TMenuItem
+        Action = actTryOpenContainingFolder
+      end
+      object MenuItem22: TMenuItem
+        Caption = '-'
+        Visible = False
+      end
+      object MenuItem8: TMenuItem
+        Action = actAddFilesToPlaylist
+        Visible = False
+      end
+      object MenuItem21: TMenuItem
+        Caption = '-'
+        Visible = False
+      end
+      object MenuItem19: TMenuItem
+        Action = actRemoveFilesFromPlaylist
+        Visible = False
       end
     end
     object MenuItemHelp: TMenuItem
       Caption = '&Help'
+      OnClick = MenuItemHelpClick
+      object MenuItemVer: TMenuItem
+        Caption = 'Version'
+        OnClick = MenuItemVerClick
+      end
     end
   end
   object OpenDialog1: TOpenDialog
@@ -177,11 +241,23 @@ object frmMain: TfrmMain
     top = 8
   end
   object PopupMenu1: TPopupMenu
+    OnPopup = PopupMenu1Popup
     left = 184
     top = 208
     object MenuItemVTVCopySelected: TMenuItem
-      Caption = 'Copy'
-      OnClick = MenuItemVTVCopySelectedClick
+      Action = actCopySelectedPath
+    end
+    object MenuItem7: TMenuItem
+      Action = actAddFilesToPlaylist
+    end
+    object MenuItem9: TMenuItem
+      Action = actTryOpenContainingFolder
+    end
+    object MenuItem16: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem6: TMenuItem
+      Action = actRemoveFilesFromPlaylist
     end
   end
   object SaveDialog1: TSaveDialog
@@ -203,34 +279,86 @@ object frmMain: TfrmMain
     object actNewFile: TAction
       Caption = 'Select files'
       OnExecute = actNewFileExecute
+      ShortCut = 16462
     end
     object actOpenTxt: TAction
-      Caption = '.txt (iTunes)'
+      Caption = 'iTunes TEXT (.txt)'
       OnExecute = actOpenTxtExecute
     end
     object actOpenM3u: TAction
-      Caption = '.m3u, .m3u8'
+      Caption = 'M3U (.m3u, .m3u8)'
       OnExecute = actOpenM3uExecute
     end
     object actOpenXSPF: TAction
-      Caption = '.xspf'
+      Caption = 'XSPF (.xspf)'
       OnExecute = actOpenXSPFExecute
     end
     object actSaveiTunesTxt: TAction
-      Caption = '.txt (iTunes)'
+      Caption = 'iTunes TEXT (.txt)'
+      Enabled = False
       OnExecute = actSaveiTunesTxtExecute
     end
+    object actSaveM3uAnsi: TAction
+      Caption = 'M3U (.m3u) System'
+      OnExecute = actSaveM3uAnsiExecute
+    end
     object actSaveM3u: TAction
-      Caption = '.m3u (UTF-8)'
+      Caption = 'M3U (.m3u) UTF-8'
+      Enabled = False
       OnExecute = actSaveM3uExecute
     end
+    object actSaveM3uBOM: TAction
+      Caption = 'M3U (.m3u) UTF-8 with BOM'
+      OnExecute = actSaveM3uBOMExecute
+    end
+    object actSaveM3u8: TAction
+      Caption = 'M3U (.m3u8) UTF-8 with BOM'
+      OnExecute = actSaveM3u8Execute
+    end
     object actSaveXSPF: TAction
-      Caption = 'actSaveXSPF'
+      Caption = 'XSPF (.xspf)'
+      Enabled = False
       OnExecute = actSaveXSPFExecute
     end
-    object actReplace: TAction
-      Caption = 'Find && Replace'
-      OnExecute = actReplaceExecute
+    object actReplaceAll: TAction
+      Caption = 'Find && Replace all'
+      OnExecute = actReplaceAllExecute
+      ShortCut = 16466
+    end
+    object actURIDecodeAll: TAction
+      Caption = 'URI Decode All (*nix)'
+    end
+    object actURIEncodeAll: TAction
+      Caption = 'URI Encode All'
+    end
+    object actURIDecodeToWinPathDelimiAll: TAction
+      Caption = 'URI Decode All with \ (Win)'
+    end
+    object actConvertToM3U: TAction
+      Caption = 'M3U'
+      OnExecute = actConvertToM3UExecute
+    end
+    object actConvertToXSPF: TAction
+      Caption = 'XSPF'
+      OnExecute = actConvertToXSPFExecute
+    end
+    object actCopySelectedPath: TAction
+      Category = 'TreePopupmenu'
+      Caption = 'Copy path/URI'
+      OnExecute = actCopySelectedPathExecute
+    end
+    object actAddFilesToPlaylist: TAction
+      Caption = 'Add files to playlist'
+      OnExecute = actAddFilesToPlaylistExecute
+    end
+    object actRemoveFilesFromPlaylist: TAction
+      Caption = 'Remove from playlist'
+      OnExecute = actRemoveFilesFromPlaylistExecute
+    end
+    object actTryOpenContainingFolder: TAction
+      Caption = 'Open containing folder'
+      OnExecute = actTryOpenContainingFolderExecute
+      Visible = False
     end
   end
 end
