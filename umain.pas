@@ -19,7 +19,7 @@ Required Component:
 Tested on
  Windows 10: Lazarus 1.8.0 r56594 FPC 3.0.4 x86_64-win64-win32/win64
  Ubuntu 17.10: Lazarus 1.8.0 rc4+dfsg-1 FPC 3.0.2 x86_64-linux-gtk2
- MacOS 10.03.2 High Sierra on iMac(21.5 Inch, Late 2012 - Intel Core i5, 8GB memory).
+ macOS 10.03.2 High Sierra on iMac(21.5 Inch, Late 2012 - Intel Core i5, 8GB memory).
                Lazarus 1.8.0 rexported FPC 3.0.4 i386-darwin-carbon
  Ubuntu 16.04 LTS
 
@@ -46,13 +46,11 @@ Known issues and bugs:
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
  On Ubuntu, file drop from shell which requires ActiveX won't work.
 
- On MacOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
+ On macOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
- On MacOS, header sort glyphs transparent isn't woking.
+ On macOS, header sort glyphs transparent isn't woking.
 
-Debug
- {$DEFINE MyDebug}
- //xspf don't need slMain. remove it for memory
+
 }
 
 
@@ -65,8 +63,7 @@ uses
   Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils,
   LazUTF8, LConvEncoding, charencstreams, laz2_XMLRead, laz2_XMLWrite, laz2_DOM,
   UOptions
-  {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif}
-  {$ifdef MyDebug}, Windows{$endif};
+  {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif};
 
 
 type
@@ -844,8 +841,8 @@ begin
      begin
        if (xDocMain.DocumentElement.NodeName = 'playlist') then
        begin
-         //
-         ProgressBar1.Style:=pbstMarquee;//start bar
+         //start ProgressBar
+         ProgressBar1.Style:=pbstMarquee;
          progressBar1.Visible:=true;
 
          xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
@@ -875,7 +872,7 @@ begin
                        begin
 
                          line:=line+1;
-                         //TODO check do I need to add to slMain? remove it.
+
                          slMain.Add(xLocationNodelist.Item[0].TextContent);
 
                          tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
@@ -884,7 +881,6 @@ begin
                          Data^.Column1 := xLocationNodelist.Item[0].TextContent;
                          Data^.Column2 := line;
 
-                         //ProgressBar1.Position := line;
                          Statusbar1.Panels[1].Text:='Processing... ['+intToStr(line) + ']' ;
                          Application.ProcessMessages;
                          if (Application.Terminated or isCloseRequested) then exit;
@@ -922,7 +918,7 @@ begin
     Statusbar1.Panels[1].Text:='';
     Statusbar1.Visible:= false;
 
-    //stop bar
+    //stop ProgressBar
     ProgressBar1.Visible:=false;
     ProgressBar1.Style:=pbstNormal;
     ProgressBar1.Position:=0;
@@ -931,7 +927,7 @@ begin
       On E :Exception do begin
         isBusy:=false;
         screen.Cursor:=crDefault;
-        //stop bar
+        //stop ProgressBar
         ProgressBar1.Visible:=false;
         ProgressBar1.Style:=pbstNormal;
         ProgressBar1.Position:=0;
@@ -1076,7 +1072,6 @@ begin
       slRow:=TStringlist.Create;
       slRow.StrictDelimiter := true;
       slRow.Delimiter := #$9; //TAB
-      //slRow.QuoteChar := '"';
       slRow.LineBreak:=#13#10;
 
       try
@@ -1568,29 +1563,21 @@ begin
     s:=stringReplace(strPath, 'file:///', '',[rfReplaceAll]);
     if AnsiContainsStr(s, ':/') then begin
       //must be Windows drive letters.
-
       s := StringReplace(s,'/','\',[rfReplaceAll]);
-
     end else
     begin
       //must be Linux?
-
       s:=stringReplace(strPath, 'file:///', '/',[rfReplaceAll]);
-
     end;
 
   end else if AnsiStartsStr('file://',strPath) then
   begin
     //must be Win UNC
-
     s:=stringReplace(strPath, 'file://', '\\',[rfReplaceAll]);
-
     s := StringReplace(s,'/','\',[rfReplaceAll]);
-
   end;
 
   result := URLDecode(s);
-
 end;
 
 function TfrmMain.ConvertLocalPathToURI(const strURI:string):string;
@@ -1631,7 +1618,8 @@ begin
     s:='file:///'+s;
 
   end else if AnsiContainsStr(s, '\') and (s[2] = ':') then
-  begin   //startWith "*:"
+  begin
+    //startWith "*:"
     //must be windows local and full path
     //replace \->/
     s := StringReplace(s,'\','/',[rfReplaceAll]);
@@ -1751,8 +1739,6 @@ begin
       isBusy:=true;
       screen.Cursor:=crHourGlass;
 
-      //TODO if rearranged.
-
       tNode := VirtualStringTree1.GetFirst;
       while Assigned(tNode) do
       begin
@@ -1839,7 +1825,6 @@ begin
       ProgressBar1.Position := 0;
 
       slMain.Clear;
-      //VirtualStringTree1.clear;
       slTmp:=TStringlist.Create;
 
       self.Caption:=' [XSPF] converting...';
@@ -1916,7 +1901,7 @@ begin
 
          end;
         end;
-        //TODO why do I get error.
+        //TODO why do I get an error...
         //xDocMain.Free;
       end;
 
@@ -2212,9 +2197,10 @@ begin
 
           xTrackListNode.AppendChild(xTrackNode);
 
-          //go to next tree
-          tNode := VirtualStringTree1.GetNextSibling(tNode);
+
         end;
+        //go to next tree
+        tNode := VirtualStringTree1.GetNextSibling(tNode);
       end;
 
       if Assigned(xDocMain) then xDocMain.Free;
