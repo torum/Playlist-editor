@@ -1,8 +1,14 @@
-# Playlist-editor/converter
-Opens iTunes's txt/m3u/xspf playlists and saves m3u/xspf playlists. 
-(Windows/Linux)
+# Playlist editor/converter (Windows/Linux)
+Opens iTunes txt/m3u/xspf playlists, creates and saves as m3u/xspf playlists. The aim is to ease the transfer your media library from one computer to another.
 
-format convert:
-.m3u->.xspf,
-.xspf->.m3u,
-.txt(iTunes TSV file)->.m3u/xspf
+Format convert:
+.txt(iTunes TSV)->.m3u/xspf,
+.m3u <-> .xspf
+
+Editing:
+Add, Remove, Rearrange order, Sorting, Find & Replace path/uri.
+
+
+Tested on Windows 10: Lazarus 1.8.0 r56594 FPC 3.0.4 x86_64-win64-win32/win64 and Ubuntu 17.10: Lazarus 1.8.0 rc4+dfsg-1 FPC 3.0.2 x86_64-linux-gtk2
+
+Required Component: VirtualTreeView-Lazarus 5.5.3-r1
