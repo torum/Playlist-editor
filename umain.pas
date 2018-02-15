@@ -722,7 +722,7 @@ begin
           Data := VirtualStringTree1.GetNodeData(tNode);
           Data^.Column0 := line;
           Data^.Column1 := slMain[i];
-          Data^.Column2 := line;
+          Data^.Column2 := i+1;
 
           ProgressBar1.Position := i;
           Statusbar1.Panels[1].Text:='Processing... ['+intToStr(line)+'/'+intToStr(slMain.Count) + ']' ;
