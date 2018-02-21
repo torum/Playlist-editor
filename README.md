@@ -1,7 +1,7 @@
 # Playlist editor/converter (Windows/Linux)
-Opens iTunes txt/m3u/xspf playlists, creates and saves as m3u/xspf playlists. The aim is to ease the transfering of your media library from one computer to another.  
+Opens iTunes txt/m3u/xspf playlists, creates and saves as m3u/xspf playlists. The aim is to ease the transfering of a media library from one computer to another.  
   
-I needed a little converter for my iTunes library and its playlists because I'm moving my media library to MPD(music player daemon) on my Linux server. So please don't expect too much.   
+I just needed a little converter for my iTunes's playlists because I'm moving my media library to MPD(music player daemon) on my Linux server. So please don't expect too much.   
 
 Format convert:
 .txt(iTunes TSV)->.m3u/xspf,
