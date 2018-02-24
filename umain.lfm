@@ -1,38 +1,37 @@
 object frmMain: TfrmMain
-  Left = 362
+  Left = 126
   Height = 468
-  Top = 707
+  Top = 400
   Width = 1182
   ActiveControl = VirtualStringTree1
   Caption = ' Playlist Editer'
-  ClientHeight = 468
+  ClientHeight = 443
   ClientWidth = 1182
   Color = clWhite
   Constraints.MinHeight = 120
   Constraints.MinWidth = 240
   DesignTimePPI = 120
   Menu = MainMenu1
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poScreenCenter
-  Visible = False
+  LCLVersion = '1.8.0.6'
   object PanelContents: TPanel
     Left = 0
-    Height = 436
+    Height = 411
     Top = 0
     Width = 1182
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 436
+    ClientHeight = 411
     ClientWidth = 1182
     TabOrder = 0
     object VirtualStringTree1: TVirtualStringTree
       Left = 0
-      Height = 426
+      Height = 401
       Top = 0
       Width = 1182
       Align = alClient
@@ -54,11 +53,11 @@ object frmMain: TfrmMain
           MinWidth = 300
           Options = [coAllowClick, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus, coUseCaptionAlignment]
           Position = 1
-          Width = 1120
+          Width = 1068
         end      
         item
           MaxWidth = 80
-          Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAutoSpring]
+          Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
           Position = 2
           Text = 'idx'
           Width = 52
@@ -74,7 +73,7 @@ object frmMain: TfrmMain
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoChangeScale]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
-      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect]
+      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect, toRestoreSelection]
       TreeOptions.StringOptions = [toSaveCaptions]
       OnBeforeItemErase = VirtualStringTree1BeforeItemErase
       OnChange = VirtualStringTree1Change
@@ -92,7 +91,7 @@ object frmMain: TfrmMain
     object ProgressBar1: TProgressBar
       Left = 0
       Height = 10
-      Top = 426
+      Top = 401
       Width = 1182
       Align = alBottom
       Anchors = [akTop, akRight, akBottom]
@@ -106,7 +105,7 @@ object frmMain: TfrmMain
   object StatusBar1: TStatusBar
     Left = 0
     Height = 32
-    Top = 436
+    Top = 411
     Width = 1182
     AutoSize = False
     Color = clInfoBk
@@ -126,7 +125,7 @@ object frmMain: TfrmMain
   object MainMenu1: TMainMenu
     left = 232
     top = 8
-    object MenuItem1: TMenuItem
+    object MenuItemFile: TMenuItem
       Caption = '&File'
       object MenuItemNew: TMenuItem
         Caption = '&New'
@@ -146,19 +145,19 @@ object frmMain: TfrmMain
           Action = actOpenXSPF
         end
       end
-      object MenuItem10: TMenuItem
+      object MenuItemBo1: TMenuItem
         Caption = '-'
       end
-      object MenuItem11: TMenuItem
+      object MenuItemConvertTo: TMenuItem
         Caption = 'Convert to'
-        object MenuItem14: TMenuItem
+        object MenuItemConv2m3u: TMenuItem
           Action = actConvertToM3U
         end
-        object MenuItem15: TMenuItem
+        object MenuItemConv2Xspf: TMenuItem
           Action = actConvertToXSPF
         end
       end
-      object MenuItem13: TMenuItem
+      object MenuItemBo2: TMenuItem
         Caption = '-'
       end
       object MenuItemSaveAs: TMenuItem
@@ -166,18 +165,18 @@ object frmMain: TfrmMain
         object MenuItemSaveTxt: TMenuItem
           Action = actSaveiTunesTxt
         end
-        object MenuItem5: TMenuItem
+        object MenuItemSaveM3uWOBom: TMenuItem
           Action = actSaveM3u
           Visible = False
         end
-        object MenuItemSaveM3u: TMenuItem
+        object MenuItemSaveM3uSys: TMenuItem
           Action = actSaveM3uAnsi
         end
-        object MenuItem4: TMenuItem
+        object MenuItemSaveM3UBom: TMenuItem
           Action = actSaveM3uBOM
           Caption = 'M3U (.m3u) UTF-8 '
         end
-        object MenuItem3: TMenuItem
+        object MenuItemSaveM3u8: TMenuItem
           Action = actSaveM3u8
           Caption = 'M3U (.m3u8) UTF-8'
         end
@@ -185,7 +184,7 @@ object frmMain: TfrmMain
           Action = actSaveXSPF
         end
       end
-      object MenuItem12: TMenuItem
+      object MenuItemBo3: TMenuItem
         Caption = '-'
       end
       object MenuItemQuit: TMenuItem
@@ -194,42 +193,44 @@ object frmMain: TfrmMain
         OnClick = MenuItemQuitClick
       end
     end
-    object MenuItem2: TMenuItem
+    object MenuItemEdit: TMenuItem
       Caption = '&Edit'
       object MenuItemReplace: TMenuItem
         Action = actReplaceAll
       end
-      object MenuItem17: TMenuItem
+      object MenuItemEditPath: TMenuItem
+        Caption = 'Edit'
+      end
+      object MenuItemBo4: TMenuItem
         Caption = '-'
         Visible = False
       end
-      object MenuItem18: TMenuItem
+      object MenuItemCopyToClipbrd: TMenuItem
         Action = actCopySelectedPath
         Visible = False
       end
-      object MenuItem20: TMenuItem
+      object MenuItemOpenFolder: TMenuItem
         Action = actTryOpenContainingFolder
       end
-      object MenuItem22: TMenuItem
+      object MenuItemBo5: TMenuItem
         Caption = '-'
         Visible = False
       end
-      object MenuItem8: TMenuItem
+      object MenuItemAddFiles2Playlist: TMenuItem
         Action = actAddFilesToPlaylist
         Visible = False
       end
-      object MenuItem21: TMenuItem
+      object MenuItemBo6: TMenuItem
         Caption = '-'
         Visible = False
       end
-      object MenuItem19: TMenuItem
+      object MenuItemRemovePath: TMenuItem
         Action = actRemoveFilesFromPlaylist
         Visible = False
       end
     end
     object MenuItemHelp: TMenuItem
       Caption = '&Help'
-      OnClick = MenuItemHelpClick
       object MenuItemVer: TMenuItem
         Caption = 'Version'
         OnClick = MenuItemVerClick
@@ -244,19 +245,26 @@ object frmMain: TfrmMain
     OnPopup = PopupMenu1Popup
     left = 184
     top = 208
-    object MenuItemVTVCopySelected: TMenuItem
-      Action = actCopySelectedPath
-    end
-    object MenuItem7: TMenuItem
+    object MenuItemPUAddFiles2Playlist: TMenuItem
       Action = actAddFilesToPlaylist
     end
-    object MenuItem9: TMenuItem
-      Action = actTryOpenContainingFolder
+    object MenuItemPUEditPath: TMenuItem
+      Caption = 'Edit path/URI'
     end
-    object MenuItem16: TMenuItem
+    object MenuItemPuCopySelected: TMenuItem
+      Action = actCopySelectedPath
+      Caption = 'Copy path/URI to clipboard'
+    end
+    object MenuItemPUBo1: TMenuItem
       Caption = '-'
     end
-    object MenuItem6: TMenuItem
+    object MenuItemPUOpenFolder: TMenuItem
+      Action = actTryOpenContainingFolder
+    end
+    object MenuItemPUBo2: TMenuItem
+      Caption = '-'
+    end
+    object MenuItemPURemove: TMenuItem
       Action = actRemoveFilesFromPlaylist
     end
   end
@@ -321,7 +329,7 @@ object frmMain: TfrmMain
       OnExecute = actSaveXSPFExecute
     end
     object actReplaceAll: TAction
-      Caption = 'Find && Replace all'
+      Caption = 'Find && Replace'
       OnExecute = actReplaceAllExecute
       ShortCut = 16466
     end

@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="PlaylistEditor.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -58,11 +58,26 @@
       <Unit2>
         <Filename Value="uoptions.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmOptions"/>
+        <ComponentName Value="frmFindReplace"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UOptions"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="uwelcome.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmWelcome"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UWelcome"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="uedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmEdit"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UEdit"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -75,6 +90,10 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
+    <CodeGeneration>
+      <TargetCPU Value="x86_64"/>
+      <TargetOS Value="win64"/>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>
