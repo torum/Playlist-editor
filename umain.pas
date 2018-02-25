@@ -32,12 +32,13 @@ Tested on
  macOS 10.13.3 High Sierra on iMac:Lazarus 1.8.0 rexported FPC 3.0.4 i386-darwin-carbon
 
 TODO
- add(1.file,2.clipbrd text,3.file drop to "droplet" to add - )
- edit
+ add files.
+ open from commandline parameter. "send to"
+ file drop on "droplet" to add files.
  isDirty check
  save as "custom" file ext.
  help->about page.
- show file type icon in the treeview.
+ show file type icon in the treeview?
  move up & down popup menu?
  fileexists check?
  commandline conversion?
@@ -59,7 +60,7 @@ Known issues and bugs:
   https://forum.lazarus.freepascal.org/index.php/topic,40042.0.html
  On Ubuntu, Treeview drag and drop is buggy.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
- On Ubuntu, file drop from shell which requires ActiveX won't work.
+ On Ubuntu, treeview file drop from shell which requires ActiveX won't work.
 
  On macOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
@@ -76,7 +77,7 @@ uses
   Classes, SysUtils, FileUtil, VirtualTrees, Forms, Controls, Graphics, Dialogs,
   Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils,
   LazUTF8, LConvEncoding, charencstreams, laz2_XMLRead, laz2_XMLWrite, laz2_DOM,
-  UFindReplace, UWelcome
+  UFindReplace, UWelcome, UEdit
   {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif};
 
 
@@ -92,6 +93,7 @@ type
     actConvertToXSPF: TAction;
     actCopySelectedPath: TAction;
     actAddFilesToPlaylist: TAction;
+    actEditPathURI: TAction;
     actTryOpenContainingFolder: TAction;
     actRemoveFilesFromPlaylist: TAction;
     actSaveM3uAnsi: TAction;
@@ -162,6 +164,7 @@ type
     procedure actConvertToM3UExecute(Sender: TObject);
     procedure actConvertToXSPFExecute(Sender: TObject);
     procedure actCopySelectedPathExecute(Sender: TObject);
+    procedure actEditPathURIExecute(Sender: TObject);
     procedure actNewFileExecute(Sender: TObject);
     procedure actOpenM3uExecute(Sender: TObject);
     procedure actOpenTxtExecute(Sender: TObject);
@@ -181,7 +184,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure MenuItemSelectFilesClick(Sender: TObject);
-    procedure MenuItemReplaceClick(Sender: TObject);
     procedure MenuItemQuitClick(Sender: TObject);
     procedure MenuItemVerClick(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
@@ -231,6 +233,9 @@ type
     function ConvertLocalPathToURI(const strURI:string):string;
     function ConvertMacPathToUnixPath(const strURI:string):string;
     procedure SaveM3uAs(blnAnsi:boolean; blnUTF8wBOM:boolean; strFileExt:string);
+    procedure OpeniTunesTxt(filename:string);
+    procedure OpenM3Us(filename:string);
+    procedure OpenXSPF(filename:string);
   public
     procedure CreateNew(sl:TStrings);
     procedure ReplaceAll(sFind:string;sReplace:string);
@@ -239,17 +244,21 @@ type
 
 var
   frmMain: TfrmMain;
-  frmFindReplace : TfrmFindReplace;
   frmWelcome : TfrmWelcome;
+  frmFindReplace : TfrmFindReplace;
+  frmEdit : TfrmEdit;
 
 implementation
 
 type
   PNodeData = ^TNodeData;
   TNodeData = record
-    Column0: integer; //TODO: May be used for file type icon in the future.
-    Column1: String;  //File path or URI
-    Column2: integer; //Stringlist index of the original file. Used to determine order when saving.
+    //TODO: Currently not using. May be used for file type icon in the future.
+    Column0: integer;
+    //File path or URI for display.
+    Column1: String;
+    //Stringlist index of the original file. Used to determine order when saving.
+    Column2: integer;
   end;
 
 {$R *.lfm}
@@ -258,7 +267,7 @@ type
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FstrAppVer:='ver 0.0.1';
+  FstrAppVer:='ver 0.1.0';
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
 
@@ -300,7 +309,7 @@ begin
   // Needs this for drag&drop from windows explorer.
   //VirtualStringTree1.DragType:=dtOLE;
 
-  //testing
+  // Testing with Right click select off.
   VirtualStringTree1.DragType:=dtVCL;
 
   {$else}
@@ -312,21 +321,40 @@ begin
   {$else}
   VirtualStringTree1.Header.Columns[2].Options:= VirtualStringTree1.Header.Columns[2].Options - [coVisible];
   {$endif}
+
+  // Open playlist file from command-line.
+  if (ParamCount > 0) then
+  begin
+    if ((ExtractFileExt(ParamStr(1)) = '.m3u')
+    or (ExtractFileExt(ParamStr(1)) = '.m3u8')) then
+    begin
+      OpenM3Us(ParamStr(1));
+    end else if (ExtractFileExt(ParamStr(1)) = '.xspf') then
+    begin
+      OpenXSPF(ParamStr(1));
+    end else if (ExtractFileExt(ParamStr(1)) = '.txt') then
+    begin
+      OpeniTunesTxt(ParamStr(1));
+    end;
+  end;
 end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
-  // show nice little welcome form?
+  // Show nice little welcome form?
   {
-  if not Assigned(frmWelcome) then begin
-    frmWelcome := TfrmWelcome.Create(self);
-    frmWelcome.Caption:=self.Caption;
+  if (ParamCount = 0) then
+  begin
+    if not Assigned(frmWelcome) then begin
+      frmWelcome := TfrmWelcome.Create(self);
+      frmWelcome.Caption:=self.Caption;
 
-    if (frmWelcome.ShowModal = mrOK) then
-    begin
-      if Assigned(frmWelcome.closeAction) then
+      if (frmWelcome.ShowModal = mrOK) then
       begin
-         frmWelcome.closeAction.Execute;
+        if Assigned(frmWelcome.closeAction) then
+        begin
+           frmWelcome.closeAction.Execute;
+        end;
       end;
     end;
   end;
@@ -356,11 +384,13 @@ end;
 
 procedure TfrmMain.MenuItemVerClick(Sender: TObject);
 begin
-  //TODO: Make better about dialog.
+  //TODO: Make better About dialog.
   showmessage(ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'')+ ' - ' + FstrAppVer);
 end;
 
 procedure TfrmMain.PopupMenu1Popup(Sender: TObject);
+var
+  Node: PVirtualNode;
 begin
 
   if VirtualStringTree1.SelectedCount > 0 then
@@ -378,6 +408,15 @@ begin
   end else
   begin
     actAddFilesToPlaylist.Enabled:=true;
+  end;
+
+  Node:=VirtualStringTree1.FocusedNode;
+  if Assigned(Node) then
+  begin
+    actEditPathURI.Enabled:=true;
+  end else
+  begin
+    actEditPathURI.Enabled:=false;
   end;
 
 end;
@@ -486,24 +525,10 @@ end;
 
 // Open iTunes txt
 procedure TfrmMain.actOpenTxtExecute(Sender: TObject);
-var
-  slRow:TStringlist;
-  line:integer;
-  el:TCharEncStream;
-  Data: PNodeData;
-  tNode: PVirtualNode;
-  filename:string;
 begin
   if isBusy then exit;
 
   //TODO: check isDirty
-
-  isRearrangedOrder:=false;
-  isLocationEdited:=false;
-  isDirty:=false;
-
-  VirtualStringTree1.Header.SortColumn:=0;
-  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   OpenDialog1.DefaultExt:='*.txt';
   OpenDialog1.Filter:='Text|*.txt';
@@ -512,19 +537,33 @@ begin
   OpenDialog1.Options:=[ ofFileMustExist ];
   if OpenDialog1.Execute then
   begin
-       if OpenDialog1.Filename = '' then exit;
-       if (not FileExists(OpenDialog1.Filename)) then exit;
-       filename:=OpenDialog1.Filename;
-  end else begin
-    exit;
+    if OpenDialog1.Filename = '' then exit;
+    if (not FileExists(OpenDialog1.Filename)) then exit;
+    OpeniTunesTxt(OpenDialog1.Filename);
   end;
+end;
+
+procedure TfrmMain.OpeniTunesTxt(filename:string);
+var
+  slRow:TStringlist;
+  line:integer;
+  el:TCharEncStream;
+  Data: PNodeData;
+  tNode: PVirtualNode;
+begin
+  isRearrangedOrder:=false;
+  isLocationEdited:=false;
+  isDirty:=false;
+
+  VirtualStringTree1.Header.SortColumn:=0;
+  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   isBusy:=true;
   screen.Cursor:=crHourGlass;
   // Just in case.
   TimerHideStatusbar.Enabled:=false;
 
-  self.Caption:=' [iTunes Text(TSV)] ' + OpenDialog1.Filename;
+  self.Caption:=' [iTunes Text(TSV)] ' + Filename;
 
   // Init variables
   slMain.Clear;
@@ -573,8 +612,10 @@ begin
             Data^.Column2 := line;
           end else begin
               //showmessage('Wrong column number. invalid text!');
-              Statusbar1.Panels[1].Text:='Error: Wrong column number. Invalid text!';
+              Statusbar1.Panels[1].Text:='Error: Wrong column count. Invalid format!';
               Statusbar1.Visible:= true;
+              TimerHideStatusbar.Enabled:=true;
+              currentFormat:=error;
               isBusy:=false;
               screen.Cursor:=crDefault;
               //TODO: raise exception
@@ -603,9 +644,9 @@ begin
         actConvertToXSPF.Enabled:=true;
 
       end else begin
-        showmessage('Empty & invalid text file.');
+        //showmessage('Empty text file.');
         //TODO: more error msg?
-        Statusbar1.Panels[1].Text:='Empty & invalid text';
+        Statusbar1.Panels[1].Text:='Empty text.';
         Statusbar1.Visible:= true;
         TimerHideStatusbar.Enabled:=true;
 
@@ -645,23 +686,10 @@ end;
 
 // Open M3U
 procedure TfrmMain.actOpenM3uExecute(Sender: TObject);
-var
-  line,i:integer;
-  el:TCharEncStream;
-  Data: PNodeData;
-  tNode: PVirtualNode;
-  filename:string;
 begin
   if isBusy then exit;
 
   //TODO: check isDirty
-
-  isRearrangedOrder:=false;
-  isLocationEdited:=false;
-  isDirty:=false;
-
-  VirtualStringTree1.Header.SortColumn:=0;
-  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   // Open m3u
   OpenDialog1.DefaultExt:='*.m3u';
@@ -673,16 +701,32 @@ begin
   begin
     if OpenDialog1.Filename = '' then exit;
     if not (FileExists(OpenDialog1.Filename)) then exit;
-  end else begin
-    exit;
+    OpenM3Us(OpenDialog1.Filename);
   end;
+
+end;
+
+procedure TfrmMain.OpenM3Us(filename:string);
+var
+  line,i:integer;
+  el:TCharEncStream;
+  Data: PNodeData;
+  tNode: PVirtualNode;
+begin
+
+  isRearrangedOrder:=false;
+  isLocationEdited:=false;
+  isDirty:=false;
+
+  VirtualStringTree1.Header.SortColumn:=0;
+  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   isBusy:=true;
   screen.Cursor:=crHourGlass;
   // Just in case.
   TimerHideStatusbar.Enabled:=false;
 
-  self.Caption:=' [M3U] ' + OpenDialog1.Filename;
+  self.Caption:=' [M3U] ' + filename;
 
   // Init
   slMain.Clear;
@@ -691,7 +735,6 @@ begin
   VirtualStringTree1.Header.Columns[1].Text:='M3U Playlist ';
 
   currentFormat:=m3u;
-  filename := OpenDialog1.Filename;
 
   Statusbar1.Panels[0].Text:='M3U';
   Statusbar1.Panels[1].Text:='';
@@ -775,24 +818,10 @@ end;
 
 // Open XSPF
 procedure TfrmMain.actOpenXSPFExecute(Sender: TObject);
-var
-  xTrackListNode,xTrackNode: TDOMElement;
-  xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
-  Data: PNodeData;
-  tNode: PVirtualNode;
-  line:integer;
-  filename:string;
 begin
   if isBusy then exit;
 
   //TODO: check isDirty
-
-  isRearrangedOrder:=false;
-  isLocationEdited:=false;
-  isDirty:=false;
-
-  VirtualStringTree1.Header.SortColumn:=0;
-  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   // Open xspf
   OpenDialog1.DefaultExt:='*.xspf';
@@ -802,18 +831,35 @@ begin
   OpenDialog1.Options:=[ ofFileMustExist ];
   if OpenDialog1.Execute then
   begin
-       if OpenDialog1.Filename = '' then exit;
-       if not (FileExists(OpenDialog1.Filename)) then exit;
-  end else begin
-    exit;
+    if OpenDialog1.Filename = '' then exit;
+    if not (FileExists(OpenDialog1.Filename)) then exit;
+    OpenXSPF(OpenDialog1.Filename);
   end;
+
+end;
+
+procedure TfrmMain.OpenXSPF(filename:string);
+var
+  xTrackListNode,xTrackNode: TDOMElement;
+  xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
+  Data: PNodeData;
+  tNode: PVirtualNode;
+  line:integer;
+begin
+
+  isRearrangedOrder:=false;
+  isLocationEdited:=false;
+  isDirty:=false;
+
+  VirtualStringTree1.Header.SortColumn:=0;
+  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   isBusy:=true;
   screen.Cursor:=crHourGlass;
   // Just in case.
   TimerHideStatusbar.Enabled:=false;
 
-  self.Caption:=' [XSPF] ' + OpenDialog1.Filename;
+  self.Caption:=' [XSPF] ' + filename;
 
   // Init
   slMain.Clear;
@@ -822,138 +868,136 @@ begin
   VirtualStringTree1.Header.Columns[1].Text:='XSPF Playlist (URI)';
 
   currentFormat:=xspf;
-  filename := OpenDialog1.Filename;
   Statusbar1.Panels[0].Text:='XSPF';
   Statusbar1.Panels[1].Text:='';
   Statusbar1.Visible:=true;
 
   try
-    if Assigned(xDocMain) then xDocMain.Free;
-    ReadXMLFile(xDocMain, filename);
+  if Assigned(xDocMain) then xDocMain.Free;
+  ReadXMLFile(xDocMain, filename);
 
-    ProgressBar1.Position := 0;
+  ProgressBar1.Position := 0;
 
-    // No way to know for xml
-    //ProgressBar1.Max :=
+  // No way to know for xml
+  //ProgressBar1.Max :=
 
-    if Assigned(xDocMain) then
-    begin
+  if Assigned(xDocMain) then
+  begin
 
-     if Assigned(xDocMain.DocumentElement) then
+   if Assigned(xDocMain.DocumentElement) then
+   begin
+     if (xDocMain.DocumentElement.NodeName = 'playlist') then
      begin
-       if (xDocMain.DocumentElement.NodeName = 'playlist') then
+       // Start ProgressBar
+       ProgressBar1.Style:=pbstMarquee;
+       progressBar1.Visible:=true;
+
+       xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
+       if Assigned(xTracklistNodelist) then
        begin
-         // Start ProgressBar
-         ProgressBar1.Style:=pbstMarquee;
-         progressBar1.Visible:=true;
-
-         xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
-         if Assigned(xTracklistNodelist) then
+         if (xTracklistNodelist.Count>0) then
          begin
-           if (xTracklistNodelist.Count>0) then
+           xTrackListNode:=xTracklistNodelist.Item[0] as TDOMElement;
+           if Assigned(xTrackListNode) then
            begin
-             xTrackListNode:=xTracklistNodelist.Item[0] as TDOMElement;
-             if Assigned(xTrackListNode) then
+
+             xTrackNodelist:=xTrackListNode.GetElementsByTagName('track');
+             if Assigned(xTrackNodelist) then
              begin
-
-               xTrackNodelist:=xTrackListNode.GetElementsByTagName('track');
-               if Assigned(xTrackNodelist) then
+               if (xTrackNodelist.Count>0) then
                begin
-                 if (xTrackNodelist.Count>0) then
+                 xTrackNode:=xTrackNodelist.Item[0] as TDOMElement;
+                 line:=0;
+
+                 while Assigned(xTrackNode) do
                  begin
-                   xTrackNode:=xTrackNodelist.Item[0] as TDOMElement;
-                   line:=0;
 
-                   while Assigned(xTrackNode) do
+                   xLocationNodelist:=xTrackNode.GetElementsByTagName('location');
+                   if Assigned(xLocationNodelist) then
                    begin
-
-                     xLocationNodelist:=xTrackNode.GetElementsByTagName('location');
-                     if Assigned(xLocationNodelist) then
+                     if (xLocationNodelist.Count>0) then
                      begin
-                       if (xLocationNodelist.Count>0) then
-                       begin
 
-                         line:=line+1;
+                       line:=line+1;
 
-                         slMain.Add(xLocationNodelist.Item[0].TextContent);
+                       slMain.Add(xLocationNodelist.Item[0].TextContent);
 
-                         tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
-                         Data := VirtualStringTree1.GetNodeData(tNode);
-                         Data^.Column0 := line;
-                         Data^.Column1 := xLocationNodelist.Item[0].TextContent;
-                         Data^.Column2 := line;
+                       tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+                       Data := VirtualStringTree1.GetNodeData(tNode);
+                       Data^.Column0 := line;
+                       Data^.Column1 := xLocationNodelist.Item[0].TextContent;
+                       Data^.Column2 := line;
 
-                         Statusbar1.Panels[1].Text:='Processing... ['+intToStr(line) + ']' ;
-                         Application.ProcessMessages;
-                         if (Application.Terminated or isCloseRequested) then exit;
-                       end;
+                       Statusbar1.Panels[1].Text:='Processing... ['+intToStr(line) + ']' ;
+                       Application.ProcessMessages;
+                       if (Application.Terminated or isCloseRequested) then exit;
                      end;
-                     xTrackNode:= xTrackNode.NextSibling as TDOMElement;
                    end;
-
-                   Statusbar1.Panels[1].Text:='';
+                   xTrackNode:= xTrackNode.NextSibling as TDOMElement;
                  end;
+
+                 Statusbar1.Panels[1].Text:='';
                end;
              end;
            end;
          end;
-
        end;
+
      end;
+   end;
+  end;
+
+  isBusy:=false;
+  screen.Cursor:=crDefault;
+
+  // Can't do it. so,
+  actSaveiTunesTxt.Enabled:=false;
+
+  actSaveM3u.Enabled:=false;
+  actSaveM3uBOM.Enabled:=false;
+  actSaveM3uAnsi.Enabled:=false;
+  actSaveM3u8.Enabled:=false;
+  actSaveXSPF.Enabled:=true;
+
+  actConvertToM3U.Enabled:=true;
+  actConvertToXSPF.Enabled:=false;
+
+  Statusbar1.Panels[1].Text:='';
+  Statusbar1.Visible:= false;
+
+  // Stop ProgressBar
+  ProgressBar1.Visible:=false;
+  ProgressBar1.Style:=pbstNormal;
+  ProgressBar1.Position:=0;
+  TimerHideStatusbar.Enabled:=true;
+  except
+    On E :Exception do begin
+      isBusy:=false;
+      screen.Cursor:=crDefault;
+      // Stop ProgressBar
+      ProgressBar1.Visible:=false;
+      ProgressBar1.Style:=pbstNormal;
+      ProgressBar1.Position:=0;
+
+      Statusbar1.Visible:= true;
+      TimerHideStatusbar.Enabled:=true;
+
+      actSaveiTunesTxt.Enabled:=false;
+      actSaveM3u.Enabled:=false;
+      actSaveM3uBOM.Enabled:=false;
+      actSaveM3uAnsi.Enabled:=false;
+      actSaveM3u8.Enabled:=false;
+      actSaveXSPF.Enabled:=false;
+      actConvertToM3U.Enabled:=false;
+      actConvertToXSPF.Enabled:=false;
+
+      currentFormat:=error;
+      //Statusbar1.Panels[1].Text:='Error opening xspf: '+filename;
+      Statusbar1.Panels[1].Text:= 'Error opening xspf: '+ E.Message;
     end;
-
-    isBusy:=false;
-    screen.Cursor:=crDefault;
-
-    // Can't do it. so,
-    actSaveiTunesTxt.Enabled:=false;
-
-    actSaveM3u.Enabled:=false;
-    actSaveM3uBOM.Enabled:=false;
-    actSaveM3uAnsi.Enabled:=false;
-    actSaveM3u8.Enabled:=false;
-    actSaveXSPF.Enabled:=true;
-
-    actConvertToM3U.Enabled:=true;
-    actConvertToXSPF.Enabled:=false;
-
-    Statusbar1.Panels[1].Text:='';
-    Statusbar1.Visible:= false;
-
-    // Stop ProgressBar
-    ProgressBar1.Visible:=false;
-    ProgressBar1.Style:=pbstNormal;
-    ProgressBar1.Position:=0;
-    TimerHideStatusbar.Enabled:=true;
-    except
-      On E :Exception do begin
-        isBusy:=false;
-        screen.Cursor:=crDefault;
-        // Stop ProgressBar
-        ProgressBar1.Visible:=false;
-        ProgressBar1.Style:=pbstNormal;
-        ProgressBar1.Position:=0;
-
-        Statusbar1.Visible:= true;
-        TimerHideStatusbar.Enabled:=true;
-
-        actSaveiTunesTxt.Enabled:=false;
-        actSaveM3u.Enabled:=false;
-        actSaveM3uBOM.Enabled:=false;
-        actSaveM3uAnsi.Enabled:=false;
-        actSaveM3u8.Enabled:=false;
-        actSaveXSPF.Enabled:=false;
-        actConvertToM3U.Enabled:=false;
-        actConvertToXSPF.Enabled:=false;
-
-        currentFormat:=error;
-        //Statusbar1.Panels[1].Text:='Error opening xspf: '+filename;
-        Statusbar1.Panels[1].Text:= 'Error opening xspf: '+ E.Message;
-      end;
-    end;
+  end;
 
 end;
-
 
 // Save playlist
 
@@ -1833,7 +1877,7 @@ begin
     end;
 
     new:begin
-
+      slTmp:=TStringlist.Create;
 
       currentFormat:= m3u;
 
@@ -2228,26 +2272,18 @@ end;
 // Replace
 procedure TfrmMain.actReplaceAllExecute(Sender: TObject);
 begin
-  MenuItemReplaceClick(nil);
-end;
-
-procedure TfrmMain.MenuItemReplaceClick(Sender: TObject);
-begin
   if isBusy then exit;
   if slMain.Count =0 then exit;
-  if not Assigned(frmFindReplace) then begin
-    frmFindReplace := TfrmFindReplace.Create(self);
-  end;
-
+  frmFindReplace := TfrmFindReplace.Create(self);
   frmFindReplace.Caption:='Find && Replace';
-
-  if (frmFindReplace.ShowModal = mrOK) then
-  begin
-    ReplaceAll(frmFindReplace.EditFind.text,frmFindReplace.EditReplaceWith.text);
+  try
+    if (frmFindReplace.ShowModal = mrOK) then
+    begin
+      ReplaceAll(frmFindReplace.EditFind.text,frmFindReplace.EditReplaceWith.text);
+    end;
+  finally
+    frmFindReplace.Free;
   end;
-
-  frmFindReplace.Free;
-
 end;
 
 procedure TfrmMain.ReplaceAll(sFind:string;sReplace:string);
@@ -2259,7 +2295,7 @@ var
   xTrackListNode,xTrackNode: TDOMElement;
   xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
 begin
-  //Replace
+  // Replace
   if (sFind = '') then exit;
   if isBusy then exit;
   screen.Cursor:=crHourGlass;
@@ -2285,15 +2321,14 @@ begin
         //slRow.QuoteChar := '"';
         slRow.LineBreak:=#13#10;
 
-
         //TODO remove any #9 char from sReplace
-
-        //TOOD check slRow.count
 
         //for each tab delimited line
         for line := 1 to -1 + slMain.Count do
         begin
           slRow.DelimitedText := slMain[line];
+
+          //TOOD check slRow.count
 
           //replace
           slRow[30]:=trim(StringReplace(slRow[30],sFind,sReplace,[rfReplaceAll]));
@@ -2465,7 +2500,7 @@ begin
 end;
 
 
-// hide status bar with timer.
+// Hide status bar with timer.
 
 procedure TfrmMain.TimerHideStatusbarTimer(Sender: TObject);
 begin
@@ -2476,10 +2511,8 @@ begin
 end;
 
 
-
 // Treeview popup menu
 
-// Treeview popup Copy
 procedure TfrmMain.actCopySelectedPathExecute(Sender: TObject);
 var
   Node: PVirtualNode;
@@ -2511,99 +2544,441 @@ begin
 
 end;
 
-procedure TfrmMain.actTryOpenContainingFolderExecute(Sender: TObject);
+procedure TfrmMain.actEditPathURIExecute(Sender: TObject);
+var
+  Node: PVirtualNode;
+  slRow:TStringlist;
+  s:string;
+  i,line:integer;
+  xTrackListNode,xTrackNode: TDOMElement;
+  xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
 begin
-  // do we need this?
+  // Edit Path
+  Node:=VirtualStringTree1.FocusedNode;
+  if Assigned(Node) then
+  begin
+    frmEdit := TfrmEdit.Create(self);
+    try
+      // Being lazy, we get text from treeview.
+      //frmEdit.EditEdit.Text:=PNodeData(VirtualStringTree1.GetNodeData(Node))^.Column1;
+      // Or not.
+      i:=PNodeData(VirtualStringTree1.GetNodeData(Node))^.Column2;
+      case currentFormat of
+        iTunesTSV:begin
+          slRow:=TStringlist.Create;
+          slRow.StrictDelimiter := true;
+          slRow.Delimiter := #$9; // TAB
+          slRow.LineBreak:=#13#10;
+          if (i <= slMain.Count) then
+          begin
+            slRow.DelimitedText := slMain[i]; // Don't -1
+            frmEdit.EditEdit.Text := slRow[30];
+          end;
+          // Don't free. Will be used lator.
+          //slRow.Free;
+        end;
+        m3u:begin
+          if (i <= slMain.Count) then
+          begin
+            frmEdit.EditEdit.Text := slMain[i-1];
+          end;
+        end;
+        xspf:begin
+
+          if Assigned(xDocMain) then
+          begin
+           if Assigned(xDocMain.DocumentElement) then
+           begin
+             if (xDocMain.DocumentElement.NodeName = 'playlist') then
+             begin
+
+               xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
+               if Assigned(xTracklistNodelist) then
+               begin
+                 if (xTracklistNodelist.Count>0) then
+                 begin
+                   xTrackListNode:=xTracklistNodelist.Item[0] as TDOMElement;
+                   if Assigned(xTrackListNode) then
+                   begin
+
+                     xTrackNodelist:=xTrackListNode.GetElementsByTagName('track');
+                     if Assigned(xTrackNodelist) then
+                     begin
+                       if (xTrackNodelist.Count>0) then
+                       begin
+                         xTrackNode:=xTrackNodelist.Item[0] as TDOMElement;
+                         line:=0;
+
+                         while Assigned(xTrackNode) do
+                         begin
+
+                           xLocationNodelist:=xTrackNode.GetElementsByTagName('location');
+                           if Assigned(xLocationNodelist) then
+                           begin
+                             if (xLocationNodelist.Count>0) then
+                             begin
+
+                               if (line = (i-1)) then
+                               begin
+                                 frmEdit.EditEdit.Text := xLocationNodelist.Item[0].TextContent;
+                                 break;
+                               end;
+
+                               line:=line+1;
+                             end;
+                           end;
+                           xTrackNode:= xTrackNode.NextSibling as TDOMElement;
+
+                         end;
+
+                       end;
+                     end;
+                   end;
+                 end;
+               end;
+
+             end;
+           end;
+          end;
+
+        end;
+        new:begin
+          if (i <= slMain.Count) then
+          begin
+            frmEdit.EditEdit.Text := slMain[i-1];
+          end;
+        end;
+        error:begin
+          exit;
+        end;
+      end;
+
+      // Show Edit form.
+      if (frmEdit.ShowModal  = mrOK) then
+      begin
+        s:= frmEdit.EditEdit.Text;
+
+        case currentFormat of
+          iTunesTSV:begin
+            // Reuse slRow.
+            slRow[30]:= s;
+            // Update slMain.
+            slMain[i]:= StringReplace(trim(slRow.text),#13#10,#$9,[rfReplaceAll]);
+          end;
+          m3u:begin
+            // Update slMain.
+            slMain[i-1]:=s;
+          end;
+          xspf:begin
+
+            if Assigned(xDocMain) then
+            begin
+             if Assigned(xDocMain.DocumentElement) then
+             begin
+               if (xDocMain.DocumentElement.NodeName = 'playlist') then
+               begin
+
+                 xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
+                 if Assigned(xTracklistNodelist) then
+                 begin
+                   if (xTracklistNodelist.Count>0) then
+                   begin
+                     xTrackListNode:=xTracklistNodelist.Item[0] as TDOMElement;
+                     if Assigned(xTrackListNode) then
+                     begin
+
+                       xTrackNodelist:=xTrackListNode.GetElementsByTagName('track');
+                       if Assigned(xTrackNodelist) then
+                       begin
+                         if (xTrackNodelist.Count>0) then
+                         begin
+                           xTrackNode:=xTrackNodelist.Item[0] as TDOMElement;
+                           line:=0;
+
+                           while Assigned(xTrackNode) do
+                           begin
+
+                             xLocationNodelist:=xTrackNode.GetElementsByTagName('location');
+                             if Assigned(xLocationNodelist) then
+                             begin
+                               if (xLocationNodelist.Count>0) then
+                               begin
+
+                                 if (line = (i-1)) then
+                                 begin
+                                   xLocationNodelist.Item[0].TextContent := s;
+                                   break;
+                                 end;
+
+                                 line:=line+1;
+                               end;
+                             end;
+                             xTrackNode:= xTrackNode.NextSibling as TDOMElement;
+
+                           end;
+
+                         end;
+                       end;
+                     end;
+                   end;
+                 end;
+
+               end;
+             end;
+            end;
+
+          end;
+          new:begin
+            // Update slMain.
+            slMain[i-1]:=s;
+          end;
+        end;
+
+        // Update Treeview text.
+        PNodeData(VirtualStringTree1.GetNodeData(Node))^.Column1 := s;
+      end;
+
+    finally
+      frmEdit.Free;
+    end;
+
+
+  end;
 end;
 
+procedure TfrmMain.actTryOpenContainingFolderExecute(Sender: TObject);
+begin
+  // Do we need this?
+end;
 
 procedure TfrmMain.actAddFilesToPlaylistExecute(Sender: TObject);
 var
-  i,j:integer;
+  i,j,line:integer;
   s:string;
   Data: PNodeData;
   tNode: PVirtualNode;
+  slTmp,slRow:TStringList;
+  xTrackListNode,xTrackNode: TDOMElement;
+  xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
 begin
-  {
-  case currentFormat of
-    iTunesTSV:begin
-      Statusbar1.Panels[1].Text:='I''m sorry, to add files to the playlist, please convert it to other format.';
-      Statusbar1.Visible:= true;
-      TimerHideStatusbar.Enabled:=true;
-      exit;
-    end;
-  end;
-  }
 
-  //TODO
-  // add and select node
 
   //open
-
   OpenDialog1.Title:='Select files to add to playlist';
   OpenDialog1.DefaultExt:='*.*';
   OpenDialog1.Filter:='Files|*.*';
   OpenDialog1.FileName:='';
   OpenDialog1.Files.Clear;
   OpenDialog1.Options:=[ ofFileMustExist, ofAllowMultiSelect ];
-  if OpenDialog1.Execute then
+  if not OpenDialog1.Execute then exit;
+  if (OpenDialog1.Files.Count > 0)then
   begin
-    if (OpenDialog1.Files.Count > 0)then
-    begin
 
+    case currentFormat of
+      iTunesTSV:begin
 
-      isBusy:=true;
-      screen.Cursor:=crHourGlass;
+       isBusy:=true;
+       screen.Cursor:=crHourGlass;
 
-      ProgressBar1.Position := 0;
-      ProgressBar1.Max := OpenDialog1.Files.Count;
-      ProgressBar1.Style:=pbstNormal;
-      ProgressBar1.Visible:=true;
+       slTmp:=TStringlist.Create;
+       slRow:=TStringlist.Create;
+       slRow.StrictDelimiter := true;
+       slRow.Delimiter := #$9; //TAB
+       slRow.LineBreak:=#13#10;
 
-      for i := 0 to -1 + OpenDialog1.Files.Count do
-      begin
-        s:=OpenDialog1.Files[i];
+       tNode := VirtualStringTree1.GetFirst;
+       while Assigned(tNode) do
+       begin
+         //get treedata
+         Data:= VirtualStringTree1.GetNodeData(tNode);
 
-              case currentFormat of
+         slRow.DelimitedText := slMain[Data^.Column2];//don't -1 iTunes header
 
-                xspf:begin
-                  //isLocationEdited:boolean;  //if xspf convert to uri
+         //set data
+         slTmp.Add(ConvertMacPathToUnixPath(slRow[30]));
 
-                end;
-              end;
+         //go to next tree
+         tNode := VirtualStringTree1.GetNextSibling(tNode);
+       end;
 
-        j:=slMain.Add(s);
+       slMain.Clear;
+       slMain.Assign(slTmp);
+       slTmp.Free;
+       slRow.Free;
 
-        tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
-        Data := VirtualStringTree1.GetNodeData(tNode);
-        Data^.Column0 := j+1;
-        Data^.Column1 := s;
-        Data^.Column2 := j+1;
+       currentFormat := new;
 
+       VirtualStringTree1.clear;
+       VirtualStringTree1.Header.SortColumn:=0;
+       VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
+       // Add to the treeview.loop
+       for i := 0 to -1 + slMain.Count do
+       begin
+         tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+         Data := VirtualStringTree1.GetNodeData(tNode);
+         Data^.Column0 := i+1;
+         Data^.Column1 := slMain[i];
+         Data^.Column2 := i+1;
+       end;
 
-        ProgressBar1.Position := i;
-        Statusbar1.Panels[1].Text:='Processing... ['+intToStr(i+1)+'/'+intToStr(OpenDialog1.Files.Count) + ']' ;
-        Application.ProcessMessages;
-        if (Application.Terminated or isCloseRequested) then exit;
+       for i := 0 to -1 + OpenDialog1.Files.Count do
+       begin
+         s:=OpenDialog1.Files[i];
+         slMain.Add(s);
+
+         tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+         Data := VirtualStringTree1.GetNodeData(tNode);
+         Data^.Column0 := slMain.Count;
+         Data^.Column1 := s;
+         Data^.Column2 := slMain.Count;
+         VirtualStringTree1.Selected[tNode]:=true;
+       end;
+
+       if Assigned(tNode) then
+       begin
+         VirtualStringTree1.ScrollIntoView(tNode,false,false);
+       end;
+
+       self.Caption:=' [New] ';
+       Statusbar1.Panels[0].Text:='New';
+       VirtualStringTree1.Header.Columns[0].Text:='#';
+       VirtualStringTree1.Header.Columns[1].Text:='New Playlist';
+
+       isBusy:=false;
+       screen.Cursor:=crDefault;
+
+       isRearrangedOrder:=false;
+
+       //can't do it anymore. so,
+       actSaveiTunesTxt.Enabled:=false;
+
+       actSaveM3u.Enabled:=true;
+       actSaveM3uBOM.Enabled:=true;
+       actSaveM3uAnsi.Enabled:=true;
+       actSaveM3u8.Enabled:=true;
+       actSaveXSPF.Enabled:=false;
+
+       actConvertToM3U.Enabled:=true;
+       actConvertToXSPF.Enabled:=true;
+      end;
+      m3u:begin
+       slTmp:=TStringlist.Create;
+       // Get rid of all the extentions and in case of rearrangement.
+       tNode := VirtualStringTree1.GetFirst;
+       while Assigned(tNode) do
+       begin
+         Data:= VirtualStringTree1.GetNodeData(tNode);
+
+         slTmp.Add(slMain[Data^.Column2-1]);
+
+         tNode := VirtualStringTree1.GetNextSibling(tNode);
+       end;
+       isRearrangedOrder:=false;
+
+       slMain.Clear;
+       slMain.Assign(slTmp);
+       slTmp.Free;
+
+       VirtualStringTree1.clear;
+       VirtualStringTree1.Header.SortColumn:=0;
+       VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
+       // Add to the treeview.loop
+       for i := 0 to -1 + slMain.Count do
+       begin
+         tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+         Data := VirtualStringTree1.GetNodeData(tNode);
+         Data^.Column0 := i+1;
+         Data^.Column1 := slMain[i];
+         Data^.Column2 := i+1;
+       end;
+
+       for i := 0 to -1 + OpenDialog1.Files.Count do
+       begin
+         s:=OpenDialog1.Files[i];
+         slMain.Add(s);
+
+         tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+         Data := VirtualStringTree1.GetNodeData(tNode);
+         Data^.Column0 := slMain.Count;
+         Data^.Column1 := s;
+         Data^.Column2 := slMain.Count;
+         VirtualStringTree1.Selected[tNode]:=true;
+       end;
+       if Assigned(tNode) then
+       begin
+         VirtualStringTree1.ScrollIntoView(tNode,false,false);
+       end;
 
       end;
-
-      Statusbar1.Panels[1].Text:='';
-      isBusy:=false;
-
-      actSaveiTunesTxt.Enabled:=false;
-
-      screen.Cursor:=crDefault;
-      StatusBar1.Visible:=false;
-      ProgressBar1.Visible:=false;
-      ProgressBar1.Position:=0;
+      xspf:begin
+        //
 
 
-      isDirty:=true;
-      isRearrangedOrder:=true;
 
+
+      end;
+      new:begin
+
+        self.Caption:=' [New] ';
+        Statusbar1.Panels[0].Text:='New';
+        VirtualStringTree1.Header.Columns[0].Text:='#';
+        VirtualStringTree1.Header.Columns[1].Text:='New Playlist';
+
+        if isRearrangedOrder then
+        begin
+          slTmp:=TStringlist.Create;
+          tNode := VirtualStringTree1.GetFirst;
+          while Assigned(tNode) do
+          begin
+            Data:= VirtualStringTree1.GetNodeData(tNode);
+
+            slTmp.Add(slMain[Data^.Column2-1]);
+
+            tNode := VirtualStringTree1.GetNextSibling(tNode);
+          end;
+
+          slMain.Clear;
+          slMain.Assign(slTmp);
+          slTmp.Free;
+
+          VirtualStringTree1.clear;
+          VirtualStringTree1.Header.SortColumn:=0;
+          VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
+          // Add to the treeview.loop
+          for i := 0 to -1 + slMain.Count do
+          begin
+            tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+            Data := VirtualStringTree1.GetNodeData(tNode);
+            Data^.Column0 := i+1;
+            Data^.Column1 := slMain[i];
+            Data^.Column2 := i+1;
+          end;
+
+          isRearrangedOrder:=false;
+        end;
+
+        for i := 0 to -1 + OpenDialog1.Files.Count do
+        begin
+          s:=OpenDialog1.Files[i];
+          slMain.Add(s);
+
+          tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+          Data := VirtualStringTree1.GetNodeData(tNode);
+          Data^.Column0 := slMain.Count;
+          Data^.Column1 := s;
+          Data^.Column2 := slMain.Count;
+          VirtualStringTree1.Selected[tNode]:=true;
+        end;
+        if Assigned(tNode) then
+        begin
+          VirtualStringTree1.ScrollIntoView(tNode,false,false);
+        end;
+      end;
     end;
+
+    isDirty:=true;
   end;
+
 
 end;
 

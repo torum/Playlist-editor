@@ -9,6 +9,7 @@ object frmEdit: TfrmEdit
   ClientHeight = 317
   ClientWidth = 914
   DesignTimePPI = 120
+  Position = poOwnerFormCenter
   LCLVersion = '1.8.0.6'
   object LabelEditCaption: TLabel
     Left = 32
@@ -64,6 +65,7 @@ object frmEdit: TfrmEdit
     Width = 120
     Caption = '&OK'
     Default = True
+    ModalResult = 1
     TabOrder = 5
   end
   object ButtonCancel: TButton

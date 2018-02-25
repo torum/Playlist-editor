@@ -71,10 +71,10 @@ object frmMain: TfrmMain
       PopupMenu = PopupMenu1
       TabOrder = 0
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoChangeScale]
-      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toEditOnClick]
-      TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
-      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect, toRightClickSelect, toRestoreSelection]
-      TreeOptions.StringOptions = [toSaveCaptions]
+      TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toReportMode, toToggleOnDblClick, toWheelPanning, toFullRowDrag, toEditOnClick]
+      TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines, toUseBlendedSelection]
+      TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toMultiSelect]
+      TreeOptions.StringOptions = []
       OnBeforeItemErase = VirtualStringTree1BeforeItemErase
       OnChange = VirtualStringTree1Change
       OnColumnClick = VirtualStringTree1ColumnClick
@@ -199,7 +199,7 @@ object frmMain: TfrmMain
         Action = actReplaceAll
       end
       object MenuItemEditPath: TMenuItem
-        Caption = 'Edit'
+        Action = actEditPathURI
       end
       object MenuItemBo4: TMenuItem
         Caption = '-'
@@ -232,7 +232,7 @@ object frmMain: TfrmMain
     object MenuItemHelp: TMenuItem
       Caption = '&Help'
       object MenuItemVer: TMenuItem
-        Caption = 'Version'
+        Caption = '&Version'
         OnClick = MenuItemVerClick
       end
     end
@@ -249,11 +249,11 @@ object frmMain: TfrmMain
       Action = actAddFilesToPlaylist
     end
     object MenuItemPUEditPath: TMenuItem
-      Caption = 'Edit path/URI'
+      Action = actEditPathURI
     end
     object MenuItemPuCopySelected: TMenuItem
       Action = actCopySelectedPath
-      Caption = 'Copy path/URI to clipboard'
+      Caption = 'Copy Path/URI to clipboard'
     end
     object MenuItemPUBo1: TMenuItem
       Caption = '-'
@@ -329,7 +329,7 @@ object frmMain: TfrmMain
       OnExecute = actSaveXSPFExecute
     end
     object actReplaceAll: TAction
-      Caption = 'Find && Replace'
+      Caption = 'Find && &Replace'
       OnExecute = actReplaceAllExecute
       ShortCut = 16466
     end
@@ -343,30 +343,42 @@ object frmMain: TfrmMain
       Caption = 'URI Decode All with \ (Win)'
     end
     object actConvertToM3U: TAction
-      Caption = 'M3U'
+      Caption = '&M3U'
       OnExecute = actConvertToM3UExecute
     end
     object actConvertToXSPF: TAction
-      Caption = 'XSPF'
+      Caption = '&XSPF'
       OnExecute = actConvertToXSPFExecute
     end
     object actCopySelectedPath: TAction
       Category = 'TreePopupmenu'
       Caption = 'Copy path/URI'
       OnExecute = actCopySelectedPathExecute
+      ShortCut = 16451
     end
     object actAddFilesToPlaylist: TAction
+      Category = 'TreePopupmenu'
       Caption = 'Add files to playlist'
       OnExecute = actAddFilesToPlaylistExecute
+      ShortCut = 16454
     end
     object actRemoveFilesFromPlaylist: TAction
+      Category = 'TreePopupmenu'
       Caption = 'Remove from playlist'
       OnExecute = actRemoveFilesFromPlaylistExecute
+      ShortCut = 46
     end
     object actTryOpenContainingFolder: TAction
+      Category = 'TreePopupmenu'
       Caption = 'Open containing folder'
       OnExecute = actTryOpenContainingFolderExecute
       Visible = False
+    end
+    object actEditPathURI: TAction
+      Category = 'TreePopupmenu'
+      Caption = 'Edi&t Path/URI'
+      OnExecute = actEditPathURIExecute
+      ShortCut = 16468
     end
   end
 end

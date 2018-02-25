@@ -13,7 +13,7 @@ object frmWelcome: TfrmWelcome
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDropFiles = FormDropFiles
-  Position = poMainFormCenter
+  Position = poOwnerFormCenter
   LCLVersion = '1.8.0.6'
   object ImageNew: TImage
     Left = 64
