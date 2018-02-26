@@ -56,27 +56,28 @@
         <UnitName Value="uMain"/>
       </Unit1>
       <Unit2>
-        <Filename Value="uoptions.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmFindReplace"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UOptions"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="uwelcome.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmWelcome"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UWelcome"/>
-      </Unit3>
-      <Unit4>
+      </Unit2>
+      <Unit3>
         <Filename Value="uedit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmEdit"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UEdit"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="ufindreplace.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmFindReplace"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UFindReplace"/>
       </Unit4>
     </Units>
   </ProjectOptions>

@@ -3,69 +3,65 @@ unit uMain;
 {$mode objfpc}{$H+}
 
 {
- About the application:
+About the application:
   I just needed a little converter for my iTunes library and playlists
  because I'm moving to MPD(music player daemon) on my Linux pc.
   So, please don't expect too much.
-}
 
-{
- About the code:
-  This code needs to be completely refactored and rewritten with a Playlist Class
+About the code:
+  This code needs to be completely refactored and rewritten with a Playlist Class etc
  for maintainability and extensibility.
   The biggest mistake was trying to preserve original format and its extra contents
  and extentions as much as possible. By doing so, I ended up writing similar code for
  each of the formats separately, repeatedly.
-}
 
-{
 Source:
  https://github.com/torumyax/Playlist-editor
 
-Required Component:
+Required Components:
  VirtualTreeView-Lazarus 5.5.3-r1
  utf8tools(included)
 
-Tested on
+Compiled and tested on
  Windows 10: Lazarus 1.8.0 r56594 FPC 3.0.4 x86_64-win64-win32/win64
  Ubuntu 17.10, 16.04 LTS: Lazarus 1.8.0 rc4+dfsg-1 FPC 3.0.2 x86_64-linux-gtk2
  macOS 10.13.3 High Sierra on iMac:Lazarus 1.8.0 rexported FPC 3.0.4 i386-darwin-carbon
 
 TODO
- add files.
- open from commandline parameter. "send to"
- file drop on "droplet" to add files.
  isDirty check
- save as "custom" file ext.
- help->about page.
- show file type icon in the treeview?
- move up & down popup menu?
- fileexists check?
- commandline conversion?
- i18n
  non utf8 xspf reading.
+ save as "custom" file ext.
+ save window pos.
+ help->about page.
+ i18n
+ UWP packaging.
+ ----
+ fileexists check?
+ show file type icon in the treeview?
+ file drop on "droplet" to add files?
+ move up & down popup menu?
+ commandline conversion?
  iTunes XML format?
 
 Known issues and bugs:
  XML reader won't accept non UTF-8 auch as Shift_JIS encoded file. But it's an unlikely senario.
- Treeview "multiselect" and "right click select" won't work togeter.
-  "right click select" -> disabled.
+ Treeview "multiselect" and "right click select" won't work togeter. "right click select" -> disabled.
 
- On Windows, When dragging files over from shell, hint text shows "Copy"
+ On Windows, When dragging files over from shell, hint text shows "Copy" -> disabled.
   https://stackoverflow.com/questions/12993003/changing-drag-cursor-in-virtualtreeview
  On Windows, on a Tablet enable note pc, Main menu shows up left side of the window.
   http://wiki.freepascal.org/TMainMenu
 
- On Ubuntu, VirtualTreeView shows Kanji characters half dissapeared.
+ On Ubuntu, Kanji characters half dissapeared. Gtk2 widgetset bug. Reported.
   https://forum.lazarus.freepascal.org/index.php/topic,40042.0.html
- On Ubuntu, Treeview drag and drop is buggy.
+ On Ubuntu, Treeview drag and drop is buggy. Reported.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
- On Ubuntu, treeview file drop from shell which requires ActiveX won't work.
+ On Ubuntu, Treeview file drop from shell which requires ActiveX won't work.
 
  On macOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
  On macOS, Treeview col header sort glyph's transparency isn't woking.
-
+ On macOS, Treeview file drop from shell which requires ActiveX won't work.
 }
 
 {$define MyDebug}
@@ -183,7 +179,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure MenuItemSelectFilesClick(Sender: TObject);
     procedure MenuItemQuitClick(Sender: TObject);
     procedure MenuItemVerClick(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
@@ -309,7 +304,7 @@ begin
   // Needs this for drag&drop from windows explorer.
   //VirtualStringTree1.DragType:=dtOLE;
 
-  // Testing with Right click select off.
+  //TMP: Testing with Right click select off.
   VirtualStringTree1.DragType:=dtVCL;
 
   {$else}
@@ -341,7 +336,8 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
-  // Show nice little welcome form?
+  //
+  // Show a nice little welcome form? Maybe not.
   {
   if (ParamCount = 0) then
   begin
@@ -363,7 +359,7 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-
+ //TODO: Save window pos.
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -423,11 +419,6 @@ end;
 
 // New playlist file
 procedure TfrmMain.actNewFileExecute(Sender: TObject);
-begin
-  MenuItemSelectFilesClick(nil);
-end;
-
-procedure TfrmMain.MenuItemSelectFilesClick(Sender: TObject);
 begin
   if isBusy then exit;
 
@@ -2758,10 +2749,11 @@ var
   Data: PNodeData;
   tNode: PVirtualNode;
   slTmp,slRow:TStringList;
-  xTrackListNode,xTrackNode: TDOMElement;
+  xTrackListNode,xTrackNode,xRootNode,xNode: TDOMElement;
   xTracklistNodelist,xTrackNodelist,xLocationNodelist:TDomNodeList;
+  xDomText:TDOMText;
 begin
-
+  // Add new items to playlist.
 
   //open
   OpenDialog1.Title:='Select files to add to playlist';
@@ -2861,6 +2853,7 @@ begin
        actConvertToM3U.Enabled:=true;
        actConvertToXSPF.Enabled:=true;
       end;
+
       m3u:begin
        slTmp:=TStringlist.Create;
        // Get rid of all the extentions and in case of rearrangement.
@@ -2910,15 +2903,95 @@ begin
        end;
 
       end;
+
       xspf:begin
         //
+       if not Assigned(xDocMain) then
+       begin
+         exit;
+       end;
+       isBusy:=true;
+       screen.Cursor:=crHourGlass;
+       ProgressBar1.Position := 0;
+
+       if Assigned(xDocMain.DocumentElement) then
+       begin
+         if (xDocMain.DocumentElement.NodeName = 'playlist') then
+         begin
+           // Start ProgressBar
+           //ProgressBar1.Style:=pbstMarquee;
+           //progressBar1.Visible:=true;
+
+           xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
+           if Assigned(xTracklistNodelist) then
+           begin
+             if (xTracklistNodelist.Count>0) then
+             begin
+               xTrackListNode:=xTracklistNodelist.Item[0] as TDOMElement;
+               if Assigned(xTrackListNode) then
+               begin
+                 line:=0;
+                 xTrackNodelist:=xTrackListNode.GetElementsByTagName('track');
+                 if Assigned(xTrackNodelist) then
+                 begin
+                   line:=xTrackNodelist.Count;
+                 end;
+
+                 for i := 0 to -1 + OpenDialog1.Files.Count do
+                 begin
+                   s:=OpenDialog1.Files[i];
+
+                   line:=line+1;
+
+                   xTrackNode := xDocMain.CreateElement('track');
+                   xNode := xDocMain.CreateElement('location');
 
 
+                   s:=ConvertLocalPathToURI(s);
+                   xDomText:=xDocMain.CreateTextNode(s);
+                   slMain.Add(s); //do i need this?
 
+
+                   xNode.AppendChild(xDomText);
+                   xTrackNode.AppendChild(xNode);
+
+                   xTrackListNode.AppendChild(xTrackNode);
+
+
+                   tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+                   Data := VirtualStringTree1.GetNodeData(tNode);
+                   Data^.Column0 := line;
+                   Data^.Column1 := s;
+                   Data^.Column2 := line;
+                   VirtualStringTree1.Selected[tNode]:=true;
+
+                 end;
+
+                 if Assigned(tNode) then
+                 begin
+                   VirtualStringTree1.ScrollIntoView(tNode,false,false);
+                 end;
+
+               end;
+             end;
+           end;
+
+           // Stop prog bar.
+           isBusy:=false;
+           screen.Cursor:=crDefault;
+           statusbar1.Panels[1].Text:='';
+
+           StatusBar1.Visible:=false;
+           ProgressBar1.Visible:=false;
+           ProgressBar1.Position:=0;
+
+         end;
+       end;
 
       end;
-      new:begin
 
+      new:begin
+        // Init. Just make sure because this might called when Apps start up.
         self.Caption:=' [New] ';
         Statusbar1.Panels[0].Text:='New';
         VirtualStringTree1.Header.Columns[0].Text:='#';

@@ -200,6 +200,7 @@ object frmMain: TfrmMain
       end
       object MenuItemEditPath: TMenuItem
         Action = actEditPathURI
+        Visible = False
       end
       object MenuItemBo4: TMenuItem
         Caption = '-'
@@ -307,7 +308,7 @@ object frmMain: TfrmMain
       OnExecute = actSaveiTunesTxtExecute
     end
     object actSaveM3uAnsi: TAction
-      Caption = 'M3U (.m3u) System'
+      Caption = 'M3U (.m3u) ANSI'
       OnExecute = actSaveM3uAnsiExecute
     end
     object actSaveM3u: TAction
