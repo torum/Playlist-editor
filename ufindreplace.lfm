@@ -46,7 +46,7 @@ object frmFindReplace: TfrmFindReplace
   object StaticTextEG: TStaticText
     Left = 32
     Height = 21
-    Top = 168
+    Top = 160
     Width = 281
     Caption = 'e.g.'
     TabOrder = 2

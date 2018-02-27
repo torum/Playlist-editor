@@ -46,6 +46,7 @@ TODO
 Known issues and bugs:
  XML reader won't accept non UTF-8 auch as Shift_JIS encoded file. But it's an unlikely senario.
  Treeview "multiselect" and "right click select" won't work togeter. "right click select" -> disabled.
+   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
 
  On Windows, When dragging files over from shell, hint text shows "Copy" -> disabled.
   https://stackoverflow.com/questions/12993003/changing-drag-cursor-in-virtualtreeview
@@ -54,17 +55,18 @@ Known issues and bugs:
 
  On Ubuntu, Kanji characters half dissapeared. Gtk2 widgetset bug. Reported.
   https://forum.lazarus.freepascal.org/index.php/topic,40042.0.html
- On Ubuntu, Treeview drag and drop is buggy. Reported.
-  https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
  On Ubuntu, Treeview file drop from shell which requires ActiveX won't work.
 
  On macOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
  On macOS, Treeview col header sort glyph's transparency isn't woking.
  On macOS, Treeview file drop from shell which requires ActiveX won't work.
+
+
+ {$define MyDebug}
 }
 
-{$define MyDebug}
+
 
 
 interface
@@ -287,7 +289,7 @@ begin
   actCopySelectedPath.Enabled:=false;
   actAddFilesToPlaylist.Enabled:=false;
 
-  ProgressBar1.Height:=6;
+  ProgressBar1.Height:=10;
   ProgressBar1.BorderWidth:=0;
   ProgressBar1.Visible:=false;
 

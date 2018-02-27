@@ -108,7 +108,7 @@ object frmMain: TfrmMain
     Top = 411
     Width = 1182
     AutoSize = False
-    Color = clInfoBk
+    Color = cl3DLight
     Panels = <    
       item
         Alignment = taCenter
