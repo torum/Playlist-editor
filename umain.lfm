@@ -135,14 +135,14 @@ object frmMain: TfrmMain
       end
       object MenuItemOpen: TMenuItem
         Caption = '&Open'
-        object MenuItemOpenTxt: TMenuItem
-          Action = actOpenTxt
-        end
         object MenuItemOpenM3u: TMenuItem
           Action = actOpenM3u
         end
         object MenuItemOpenXspf: TMenuItem
           Action = actOpenXSPF
+        end
+        object MenuItemOpenTxt: TMenuItem
+          Action = actOpenTxt
         end
       end
       object MenuItemBo1: TMenuItem
@@ -162,15 +162,9 @@ object frmMain: TfrmMain
       end
       object MenuItemSaveAs: TMenuItem
         Caption = '&Save As'
-        object MenuItemSaveTxt: TMenuItem
-          Action = actSaveiTunesTxt
-        end
         object MenuItemSaveM3uWOBom: TMenuItem
           Action = actSaveM3u
           Visible = False
-        end
-        object MenuItemSaveM3uSys: TMenuItem
-          Action = actSaveM3uAnsi
         end
         object MenuItemSaveM3UBom: TMenuItem
           Action = actSaveM3uBOM
@@ -180,8 +174,14 @@ object frmMain: TfrmMain
           Action = actSaveM3u8
           Caption = 'M3U (.m3u8) UTF-8'
         end
+        object MenuItemSaveM3uSys: TMenuItem
+          Action = actSaveM3uAnsi
+        end
         object MenuItemSaveXspf: TMenuItem
           Action = actSaveXSPF
+        end
+        object MenuItemSaveTxt: TMenuItem
+          Action = actSaveiTunesTxt
         end
       end
       object MenuItemBo3: TMenuItem

@@ -32,7 +32,6 @@ TODO
  non utf8 xspf reading.
  save as "custom" file ext.
  save window pos.
- help->about page.
  i18n
  UWP packaging.
  ----
@@ -75,7 +74,7 @@ uses
   Classes, SysUtils, FileUtil, VirtualTrees, Forms, Controls, Graphics, Dialogs,
   Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils,
   LazUTF8, LConvEncoding, charencstreams, laz2_XMLRead, laz2_XMLWrite, laz2_DOM,
-  UFindReplace, UWelcome, UEdit
+  UFindReplace, UWelcome, UEdit, UAbout
   {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif};
 
 
@@ -244,6 +243,7 @@ var
   frmWelcome : TfrmWelcome;
   frmFindReplace : TfrmFindReplace;
   frmEdit : TfrmEdit;
+  frmAbout : TfrmAbout;
 
 implementation
 
@@ -265,6 +265,7 @@ type
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   FstrAppVer:='ver 0.1.0';
+  Caption := ' Playlist Editor - ' + FstrAppVer;
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
 
@@ -382,8 +383,19 @@ end;
 
 procedure TfrmMain.MenuItemVerClick(Sender: TObject);
 begin
-  //TODO: Make better About dialog.
-  showmessage(ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'')+ ' - ' + FstrAppVer);
+
+  frmAbout := TfrmAbout.Create(self);
+  frmAbout.Caption:=' '+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'');
+
+  frmAbout.StaticTextAppsVer.Caption := 'Playlist editor' + ' - ' + FstrAppVer;
+  frmAbout.StaticTextWho.Caption := 'by torumyax';
+  frmAbout.StaticTextWebSite.Caption:='https://github.com/torumyax/Playlist-editor';
+
+  if (frmAbout.ShowModal = mrOK) then
+  begin
+
+  end;
+  frmAbout.free;
 end;
 
 procedure TfrmMain.PopupMenu1Popup(Sender: TObject);
@@ -2532,7 +2544,7 @@ begin
     cl.Add(Data^.Column1);
   end;
 
-  Clipboard.AsText:=cl.Text;
+  Clipboard.AsText:=Trim(cl.Text);
   cl.Free;
 
 end;

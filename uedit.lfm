@@ -30,7 +30,8 @@ object frmEdit: TfrmEdit
     Left = 32
     Height = 21
     Top = 88
-    Width = 281
+    Width = 23
+    AutoSize = True
     Caption = 'e.g.'
     TabOrder = 1
   end
@@ -38,7 +39,8 @@ object frmEdit: TfrmEdit
     Left = 56
     Height = 21
     Top = 120
-    Width = 847
+    Width = 351
+    AutoSize = True
     Caption = 'A. "C:\Users\OLD-USER\" -> "C:\Users\NEW-USER\"'
     TabOrder = 2
   end
@@ -46,15 +48,16 @@ object frmEdit: TfrmEdit
     Left = 56
     Height = 21
     Top = 152
-    Width = 845
+    Width = 641
+    AutoSize = True
     Caption = 'B. "file:///C:/Users/me/Music/iTunes/iTunes%20Media/Music/" -> "file://192.168.3.123/MyMusic/"'
     TabOrder = 3
   end
   object StaticTextC: TStaticText
     Left = 56
-    Height = 56
+    Height = 64
     Top = 184
-    Width = 847
+    Width = 822
     Caption = 'C. "C:\Users\me\Music\" -> "/home/me/Music/" (or replace with blank to remove base path to make it relative path)'#13#10'    "\" -> "/"  (Windows path delimiter to Unix path delimiter)'
     TabOrder = 4
   end
