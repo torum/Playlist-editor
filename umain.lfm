@@ -382,4 +382,11 @@ object frmMain: TfrmMain
       ShortCut = 16468
     end
   end
+  object XMLConfig1: TXMLConfig
+    StartEmpty = False
+    RootName = 'Application'
+    ReadOnly = False
+    left = 921
+    top = 48
+  end
 end

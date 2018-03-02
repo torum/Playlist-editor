@@ -29,7 +29,6 @@ Compiled and tested on
 
 TODO:
  - priority 1 -
- save window pos.
  i18n
  UWP packaging.
  - priority 2 (enhansments) -
@@ -37,7 +36,6 @@ TODO:
  non utf8 xspf reading.
  save as "custom" file ext.
  fileexists check?
- show file type icon in the treeview?
  - priority 3 (ideas) -
  file drop on "droplet" to add files?
  move up & down popup menu?
@@ -81,7 +79,7 @@ uses
   Classes, SysUtils, FileUtil, VirtualTrees, Forms, Controls, Graphics, Dialogs,
   Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils, LCLType,
   LazUTF8, LConvEncoding, charencstreams, laz2_XMLRead, laz2_XMLWrite, laz2_DOM,
-  UFindReplace, UWelcome, UEdit, UAbout
+  UFindReplace, UWelcome, UEdit, UAbout, XMLConf
   {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif};
 
 
@@ -164,6 +162,7 @@ type
     StatusBar1: TStatusBar;
     TimerHideStatusbar: TTimer;
     VirtualStringTree1: TVirtualStringTree;
+    XMLConfig1: TXMLConfig;
     procedure actAddFilesToPlaylistExecute(Sender: TObject);
     procedure actConvertToM3UExecute(Sender: TObject);
     procedure actConvertToXSPFExecute(Sender: TObject);
@@ -239,6 +238,8 @@ type
     procedure OpeniTunesTxt(filename:string);
     procedure OpenM3Us(filename:string);
     procedure OpenXSPF(filename:string);
+    procedure StoreFormState;
+    procedure RestoreFormState;
   public
     procedure CreateNew(sl:TStrings);
     procedure ReplaceAll(sFind:string;sReplace:string);
@@ -316,7 +317,6 @@ begin
 
   //TMP: Testing with Right click select off.
   VirtualStringTree1.DragType:=dtVCL;
-
   {$else}
   VirtualStringTree1.DragType:=dtVCL;
   {$endif}
@@ -326,6 +326,28 @@ begin
   {$else}
   VirtualStringTree1.Header.Columns[2].Options:= VirtualStringTree1.Header.Columns[2].Options - [coVisible];
   {$endif}
+
+
+
+  // Load settings
+  if ForceDirectories(GetAppConfigDir(false)) then
+  begin
+    //XMLConfig.FileName:=GetAppConfigFile(False);
+    {$ifdef windows}
+    XMLConfig1.FileName:=GetAppConfigDir(false)+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'.config');
+    {$else}
+    XMLConfig.FileName:=GetAppConfigDir(false)+'.'+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'') +'.config';
+    //TODO: Make it hidden file in Linux?
+    {$endif}
+  end else begin
+    {$ifdef windows}
+    XMLConfig1.FileName:=ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'.config');
+    {$else}
+    XMLConfig.FileName:='.'+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'') +'.config';
+    //TODO: Make it hidden file in Linux?
+    {$endif}
+  end;
+
 
   // Open playlist file from command-line.
   if (ParamCount > 0) then
@@ -346,6 +368,12 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
+  //it seems, it must be in "FormShow"
+  if fileexists(XMLConfig1.FileName) then
+  begin
+     RestoreFormState;
+  end;
+
   //
   // Show a nice little welcome form? Maybe not.
   {
@@ -369,7 +397,8 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
- //TODO: Save window pos.
+  // Save window pos.
+  StoreFormState;
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -3331,7 +3360,58 @@ end;
 https://stackoverflow.com/questions/3770109/how-do-you-drag-and-drop-a-file-from-explorer-shell-into-a-virtualtreeview-contr
 }
 
+// http://wiki.freepascal.org/Remember_form_position_and_size
 
+procedure TfrmMain.RestoreFormState;
+var
+  LastWindowState: TWindowState;
+begin
+
+  with XMLConfig1 do
+  begin
+    LastWindowState := TWindowState(GetValue('WindowState', Integer(WindowState)));
+
+    if LastWindowState = wsMaximized then
+    begin
+      WindowState := wsNormal;
+      BoundsRect := Bounds(
+        GetValue('RestoredLeft', RestoredLeft),
+        GetValue('RestoredTop', RestoredTop),
+        GetValue('RestoredWidth', RestoredWidth),
+        GetValue('RestoredHeight', RestoredHeight));
+      WindowState := wsMaximized;
+    end else
+    begin
+      WindowState := wsNormal;
+      BoundsRect := Bounds(
+        GetValue('NormalLeft', Left),
+        GetValue('NormalTop', Top),
+        GetValue('NormalWidth', Width),
+        GetValue('NormalHeight', Height));
+    end;
+  end;
+
+end;
+
+procedure TfrmMain.StoreFormState;
+begin
+
+  with XMLConfig1 do
+  begin
+    SetValue('NormalLeft', Left);
+    SetValue('NormalTop', Top);
+    SetValue('NormalWidth', Width);
+    SetValue('NormalHeight', Height);
+
+    SetValue('RestoredLeft', RestoredLeft);
+    SetValue('RestoredTop', RestoredTop);
+    SetValue('RestoredWidth', RestoredWidth);
+    SetValue('RestoredHeight', RestoredHeight);
+
+    SetValue('WindowState', Integer(WindowState));
+  end;
+
+end;
 
 
 
