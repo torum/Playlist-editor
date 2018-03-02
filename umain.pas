@@ -27,42 +27,49 @@ Compiled and tested on
  Ubuntu 17.10, 16.04 LTS: Lazarus 1.8.0 rc4+dfsg-1 FPC 3.0.2 x86_64-linux-gtk2
  macOS 10.13.3 High Sierra on iMac:Lazarus 1.8.0 rexported FPC 3.0.4 i386-darwin-carbon
 
-TODO
- isDirty check
- non utf8 xspf reading.
- save as "custom" file ext.
+TODO:
+ - priority 1 -
  save window pos.
  i18n
  UWP packaging.
- ----
+ - priority 2 (enhansments) -
+ show file type icon in the treeview.
+ non utf8 xspf reading.
+ save as "custom" file ext.
  fileexists check?
  show file type icon in the treeview?
+ - priority 3 (ideas) -
  file drop on "droplet" to add files?
  move up & down popup menu?
  commandline conversion?
  iTunes XML format?
 
 Known issues and bugs:
- XML reader won't accept non UTF-8 auch as Shift_JIS encoded file. But it's an unlikely senario.
- Treeview "multiselect" and "right click select" won't work togeter. "right click select" -> disabled.
+ XML reader won't accept non UTF-8 auch as Shift_JIS encoded file.
+   It's an unlikely senario. It's low priority.
+ Treeview "multiselect" and "right click select" won't work well togeter.
    https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
+   "right click select" -> disabled.
 
- On Windows, When dragging files over from shell, hint text shows "Copy" -> disabled.
+ On Windows, When dragging files over from shell, hint text shows "Copy".
   https://stackoverflow.com/questions/12993003/changing-drag-cursor-in-virtualtreeview
+  File drag and drop from windows explorer shell -> disabled.
  On Windows, on a Tablet enable note pc, Main menu shows up left side of the window.
   http://wiki.freepascal.org/TMainMenu
 
  On Ubuntu, Kanji characters half dissapeared. Gtk2 widgetset bug. Reported.
   https://forum.lazarus.freepascal.org/index.php/topic,40042.0.html
+  https://bugs.freepascal.org/view.php?id=33215
  On Ubuntu, Treeview file drop from shell which requires ActiveX won't work.
+ On Ubuntu, mouse wheel(tauch pad) scrolling won't move Treeview's scrollbar thumb. It doesn't sync.
 
  On macOS, Treeview mouse wheel scrolling is not working. always go back to where it was.
   https://forum.lazarus.freepascal.org/index.php/topic,40061.0.html
  On macOS, Treeview col header sort glyph's transparency isn't woking.
  On macOS, Treeview file drop from shell which requires ActiveX won't work.
 
-
- {$define MyDebug}
+ Debug:
+ define MyDebug
 }
 
 
@@ -72,7 +79,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, VirtualTrees, Forms, Controls, Graphics, Dialogs,
-  Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils,
+  Menus, ComCtrls, ExtCtrls, StdCtrls, Clipbrd, ActnList, strutils, LCLType,
   LazUTF8, LConvEncoding, charencstreams, laz2_XMLRead, laz2_XMLWrite, laz2_DOM,
   UFindReplace, UWelcome, UEdit, UAbout
   {$ifdef windows}, ActiveX{$else}, FakeActiveX{$endif};
@@ -265,7 +272,7 @@ type
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   FstrAppVer:='ver 0.1.0';
-  Caption := ' Playlist Editor - ' + FstrAppVer;
+  Caption := ' Playlist Editor ';
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
 
@@ -391,10 +398,8 @@ begin
   frmAbout.StaticTextWho.Caption := 'by torumyax';
   frmAbout.StaticTextWebSite.Caption:='https://github.com/torumyax/Playlist-editor';
 
-  if (frmAbout.ShowModal = mrOK) then
-  begin
+  frmAbout.ShowModal;
 
-  end;
   frmAbout.free;
 end;
 
@@ -436,14 +441,15 @@ procedure TfrmMain.actNewFileExecute(Sender: TObject);
 begin
   if isBusy then exit;
 
-  //TODO: Check isDirty
-
-  isRearrangedOrder:=false;
-  isLocationEdited:=false;
-  isDirty:=false;
-
-  VirtualStringTree1.Header.SortColumn:=0;
-  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
+  if (isDirty) then
+  begin
+    if MessageDlg(' Playlist has been changed', 'Do you wish to discard changes?', mtConfirmation,
+       [mbYes, mbCancel],0) <> mrYes
+      then
+    begin
+      exit;
+    end;
+  end;
 
   // Open
   OpenDialog1.DefaultExt:='*.*';
@@ -480,8 +486,14 @@ begin
   slMain.Clear;
   VirtualStringTree1.Clear;
 
+  isRearrangedOrder:=false;
+  isLocationEdited:=false;
+  isDirty:=false;
+
   VirtualStringTree1.Header.Columns[0].Text:='#';
   VirtualStringTree1.Header.Columns[1].Text:='New Playlist';
+  VirtualStringTree1.Header.SortColumn:=0;
+  VirtualStringTree1.Header.SortDirection:=VirtualTrees.TSortDirection(sdAscending);
 
   currentFormat:=new;
 
@@ -533,7 +545,15 @@ procedure TfrmMain.actOpenTxtExecute(Sender: TObject);
 begin
   if isBusy then exit;
 
-  //TODO: check isDirty
+  if (isDirty) then
+  begin
+    if MessageDlg(' Playlist has been changed', 'Do you wish to discard changes?', mtConfirmation,
+       [mbYes, mbCancel],0) <> mrYes
+      then
+    begin
+      exit;
+    end;
+  end;
 
   OpenDialog1.DefaultExt:='*.txt';
   OpenDialog1.Filter:='Text|*.txt';
@@ -694,7 +714,15 @@ procedure TfrmMain.actOpenM3uExecute(Sender: TObject);
 begin
   if isBusy then exit;
 
-  //TODO: check isDirty
+  if (isDirty) then
+  begin
+    if MessageDlg(' Playlist has been changed', 'Do you wish to discard changes?', mtConfirmation,
+       [mbYes, mbCancel],0) <> mrYes
+      then
+    begin
+      exit;
+    end;
+  end;
 
   // Open m3u
   OpenDialog1.DefaultExt:='*.m3u';
@@ -826,7 +854,15 @@ procedure TfrmMain.actOpenXSPFExecute(Sender: TObject);
 begin
   if isBusy then exit;
 
-  //TODO: check isDirty
+  if (isDirty) then
+  begin
+    if MessageDlg(' Playlist has been changed', 'Do you wish to discard changes?', mtConfirmation,
+       [mbYes, mbCancel],0) <> mrYes
+      then
+    begin
+      exit;
+    end;
+  end;
 
   // Open xspf
   OpenDialog1.DefaultExt:='*.xspf';
@@ -2280,7 +2316,7 @@ begin
   if isBusy then exit;
   if slMain.Count =0 then exit;
   frmFindReplace := TfrmFindReplace.Create(self);
-  frmFindReplace.Caption:='Find && Replace';
+  frmFindReplace.Caption:='Find & Replace';
   try
     if (frmFindReplace.ShowModal = mrOK) then
     begin
@@ -2933,8 +2969,8 @@ begin
          if (xDocMain.DocumentElement.NodeName = 'playlist') then
          begin
            // Start ProgressBar
-           //ProgressBar1.Style:=pbstMarquee;
-           //progressBar1.Visible:=true;
+           ProgressBar1.Style:=pbstMarquee;
+           progressBar1.Visible:=true;
 
            xTracklistNodelist := xDocMain.DocumentElement.GetElementsByTagName('trackList');
            if Assigned(xTracklistNodelist) then
@@ -2996,6 +3032,7 @@ begin
            statusbar1.Panels[1].Text:='';
 
            StatusBar1.Visible:=false;
+           ProgressBar1.Style:=pbstNormal;
            ProgressBar1.Visible:=false;
            ProgressBar1.Position:=0;
 
@@ -3170,6 +3207,7 @@ begin
   begin
     // if sorted, make
     isRearrangedOrder:=true;
+    isDirty:=true;
   end;
 end;
 

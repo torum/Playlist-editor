@@ -233,7 +233,7 @@ object frmMain: TfrmMain
     object MenuItemHelp: TMenuItem
       Caption = '&Help'
       object MenuItemVer: TMenuItem
-        Caption = '&Version'
+        Caption = '&About'
         OnClick = MenuItemVerClick
       end
     end
@@ -286,7 +286,7 @@ object frmMain: TfrmMain
     left = 136
     top = 8
     object actNewFile: TAction
-      Caption = 'Select files'
+      Caption = 'Select files to add'
       OnExecute = actNewFileExecute
       ShortCut = 16462
     end
