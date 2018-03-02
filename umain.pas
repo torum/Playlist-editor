@@ -32,15 +32,15 @@ TODO:
  i18n
  UWP packaging.
  - priority 2 (enhansments) -
- show file type icon in the treeview.
- non utf8 xspf reading.
+ fileexists check.
  save as "custom" file ext.
- fileexists check?
+ show file type icons in the treeview.
+ non utf8 xspf reading.
  - priority 3 (ideas) -
  file drop on "droplet" to add files?
- move up & down popup menu?
- commandline conversion?
- iTunes XML format?
+ move up & down popup menu.
+ commandline conversion.
+ iTunes XML format.
 
 Known issues and bugs:
  XML reader won't accept non UTF-8 auch as Shift_JIS encoded file.
@@ -260,9 +260,9 @@ type
   TNodeData = record
     //TODO: Currently not using. May be used for file type icon in the future.
     Column0: integer;
-    //File path or URI for display.
+    // File path or URI for display.
     Column1: String;
-    //Stringlist index of the original file. Used to determine order when saving.
+    // Stringlist index of the original file. Used to determine order when saving.
     Column2: integer;
   end;
 
@@ -272,7 +272,7 @@ type
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FstrAppVer:='ver 0.1.0';
+  FstrAppVer:='ver 0.1.1 beta';
   Caption := ' Playlist Editor ';
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
@@ -327,8 +327,6 @@ begin
   VirtualStringTree1.Header.Columns[2].Options:= VirtualStringTree1.Header.Columns[2].Options - [coVisible];
   {$endif}
 
-
-
   // Load settings
   if ForceDirectories(GetAppConfigDir(false)) then
   begin
@@ -347,7 +345,6 @@ begin
     //TODO: Make it hidden file in Linux?
     {$endif}
   end;
-
 
   // Open playlist file from command-line.
   if (ParamCount > 0) then
@@ -368,7 +365,7 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
-  //it seems, it must be in "FormShow"
+  // Load window pos and size.
   if fileexists(XMLConfig1.FileName) then
   begin
      RestoreFormState;
@@ -397,7 +394,7 @@ end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  // Save window pos.
+  // Save window pos and size.
   StoreFormState;
 end;
 
@@ -419,7 +416,7 @@ end;
 
 procedure TfrmMain.MenuItemVerClick(Sender: TObject);
 begin
-
+  // Show about dialog.
   frmAbout := TfrmAbout.Create(self);
   frmAbout.Caption:=' '+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'');
 
