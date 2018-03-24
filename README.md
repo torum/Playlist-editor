@@ -7,8 +7,7 @@ Format convert:
   
 Editing:  
 Add, Remove, Rearrange order, Sort, Find & Replace and Edit path/URI.  
-
-I just needed a little converter for my iTunes's playlists because I'm moving my media library to MPD(music player daemon) on my Linux server.
+  
 
 Windows
 ![alt text](https://github.com/torumyax/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png?raw=true)
