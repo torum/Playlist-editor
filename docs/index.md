@@ -44,9 +44,7 @@ Ubuntu (Ubuntu default theme)
 Windows/Linux. Otherwise, none.  
    
 ### Required to compile:  
-[Lazarus and FPC](https://www.lazarus-ide.org/)  
-  
-[VirtualTreeView-Lazarus 5.5.3-r1](https://github.com/blikblum/VirtualTreeView-Lazarus)  
+[Lazarus IDE and FPC](https://www.lazarus-ide.org/) and [VirtualTreeView component](https://github.com/blikblum/VirtualTreeView-Lazarus)  
 
 ### Compiled and tested on  
 - Windows 10 (64bit): Lazarus 1.8.0 r56594 FPC 3.0.4 x86_64-win64-win32/win64  
