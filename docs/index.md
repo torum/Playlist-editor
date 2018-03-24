@@ -4,10 +4,12 @@ title: Playlist Editor
 ---
 
 ## Menu
-  
-* [Top page](https://torumyax.github.io/Playlist-editor/)
+
   
 * [Project page](https://github.com/torumyax/Playlist-editor)
+
+* [Apps Privacy Policy page](https://torumyax.github.io/Playlist-editor/app-privacy-policy/)  
+
   
 
 ---------------------------------------
