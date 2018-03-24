@@ -6,7 +6,7 @@ title: Playlist Editor
 ## Menu
 
   
-* [Project page](https://github.com/torumyax/Playlist-editor)
+* [Github Project page](https://github.com/torumyax/Playlist-editor)
 
 * [Apps Privacy Policy page](https://torumyax.github.io/Playlist-editor/app-privacy-policy/)  
 
