@@ -5,7 +5,7 @@ title: Playlist Editor
 
 * [Top page](https://torumyax.github.io/Playlist-editor/)
   
-* [Project page](https://github.com/torumyax/Playlist-editor)
+* [Github Project page](https://github.com/torumyax/Playlist-editor)
   
 
 
