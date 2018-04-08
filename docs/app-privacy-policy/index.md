@@ -3,9 +3,9 @@ layout: default
 title: Playlist Editor
 ---
 
-* [Top page](https://torumyax.github.io/Playlist-editor/)
+* [Top page](https://torum.github.io/Playlist-editor/)
   
-* [Github Project page](https://github.com/torumyax/Playlist-editor)
+* [Github Project page](https://github.com/torum/Playlist-editor)
   
 
 
