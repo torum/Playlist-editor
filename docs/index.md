@@ -6,9 +6,9 @@ title: Playlist Editor
 ## Menu
 
   
-* [Github Project page](https://github.com/torumyax/Playlist-editor)
+* [Github Project page](https://github.com/torum/Playlist-editor)
 
-* [Apps Privacy Policy page](https://torumyax.github.io/Playlist-editor/app-privacy-policy/)  
+* [Apps Privacy Policy page](https://torum.github.io/Playlist-editor/app-privacy-policy/)  
 
   
 
@@ -28,16 +28,16 @@ Add, Remove, Rearrange order, Sort, Find & Replace and Edit path/URI.
   
 ### Screenshots:
 Windows
-![alt text](https://github.com/torumyax/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png?raw=true)
 
 Ubuntu (gnome dark theme)
-![alt text](https://github.com/torumyax/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot2.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot2.png?raw=true)
 
 Ubuntu (gnome default theme)
-![alt text](https://github.com/torumyax/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot3.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot3.png?raw=true)
   
 Ubuntu (Ubuntu default theme)
-![alt text](https://github.com/torumyax/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot4.png?raw=true) 
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot4.png?raw=true) 
  
 
 ### Required to run:    
