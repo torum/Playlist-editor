@@ -272,7 +272,7 @@ type
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FstrAppVer:='ver 0.1.1 beta';
+  FstrAppVer:='ver 0.1.2 beta';
   Caption := ' Playlist Editor ';
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
@@ -640,6 +640,7 @@ begin
       slRow.StrictDelimiter := true;
       slRow.Delimiter := #$9; // TAB
       //slRow.QuoteChar := '"'; // Don't
+      slRow.QuoteChar := #0;
       slRow.LineBreak:=#13#10;
 
       ProgressBar1.Position := 0;
@@ -654,7 +655,7 @@ begin
         begin
           slRow.DelimitedText := slMain[line];
 
-          if (slRow.Count = 31) then begin
+          if (slRow.Count >= 31) then begin
             // add to treeview
             tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
             Data := VirtualStringTree1.GetNodeData(tNode);
@@ -1185,6 +1186,7 @@ begin
       slRow.StrictDelimiter := true;
       slRow.Delimiter := #$9; //TAB
       slRow.LineBreak:=#13#10;
+      slRow.QuoteChar := #0;
 
       try
         SaveDialog1.DefaultExt:='*'+strFileExt;
@@ -2375,6 +2377,10 @@ begin
   isDirty:=true;
 
   case currentFormat of
+    error:begin
+      // Do nothing.
+
+    end;
     iTunesTSV:begin
         isBusy:=true;
         ProgressBar1.Position := 0;
@@ -2385,7 +2391,8 @@ begin
         slRow:=TStringlist.Create;
         slRow.StrictDelimiter := true;
         slRow.Delimiter := #$9; //TAB
-        //slRow.QuoteChar := '"';
+        //slRow.QuoteChar := '"'; // Don't
+        slRow.QuoteChar := #0;
         slRow.LineBreak:=#13#10;
 
         //TODO remove any #9 char from sReplace
@@ -2395,18 +2402,26 @@ begin
         begin
           slRow.DelimitedText := slMain[line];
 
-          //TOOD check slRow.count
+          // check slRow.count
+          if slRow.Count >= 30 then
+          begin
+            //replace
+            slRow[30]:=trim(StringReplace(slRow[30],sFind,sReplace,[rfReplaceAll]));
 
-          //replace
-          slRow[30]:=trim(StringReplace(slRow[30],sFind,sReplace,[rfReplaceAll]));
+            tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+            Data := VirtualStringTree1.GetNodeData(tNode);
+            Data^.Column0 := line;
+            Data^.Column1 := slRow[30];
+            Data^.Column2 := line;
 
-          tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
-          Data := VirtualStringTree1.GetNodeData(tNode);
-          Data^.Column0 := line;
-          Data^.Column1 := slRow[30];
-          Data^.Column2 := line;
-
-          slMain[line]:= StringReplace(trim(slRow.text),#13#10,#$9,[rfReplaceAll]);
+            slMain[line]:= StringReplace(trim(slRow.text),#13#10,#$9,[rfReplaceAll]);
+          end else begin
+           tNode := VirtualStringTree1.AddChild(VirtualStringTree1.RootNode);
+           Data := VirtualStringTree1.GetNodeData(tNode);
+           Data^.Column0 := line;
+           Data^.Column1 := 'Error';
+           Data^.Column2 := line;
+          end;
 
           ProgressBar1.Position := line;
           statusbar1.Panels[1].Text:='Processing...'+intToStr(line);

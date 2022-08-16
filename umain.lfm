@@ -1,16 +1,15 @@
 object frmMain: TfrmMain
-  Left = 126
-  Height = 468
-  Top = 400
-  Width = 1182
+  Left = 1476
+  Height = 374
+  Top = 629
+  Width = 946
   ActiveControl = VirtualStringTree1
   Caption = ' Playlist Editer'
-  ClientHeight = 443
-  ClientWidth = 1182
+  ClientHeight = 354
+  ClientWidth = 946
   Color = clWhite
-  Constraints.MinHeight = 120
-  Constraints.MinWidth = 240
-  DesignTimePPI = 120
+  Constraints.MinHeight = 96
+  Constraints.MinWidth = 192
   Menu = MainMenu1
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -18,25 +17,25 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '2.2.2.0'
   object PanelContents: TPanel
     Left = 0
-    Height = 411
+    Height = 322
     Top = 0
-    Width = 1182
+    Width = 946
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 411
-    ClientWidth = 1182
+    ClientHeight = 322
+    ClientWidth = 946
     TabOrder = 0
     object VirtualStringTree1: TVirtualStringTree
       Left = 0
-      Height = 401
+      Height = 322
       Top = 0
-      Width = 1182
+      Width = 946
       Align = alClient
       BorderStyle = bsNone
-      DefaultNodeHeight = 20
+      DefaultNodeHeight = 16
       DefaultText = 'Node'
       DragOperations = [doMove]
       Header.AutoSizeIndex = 1
@@ -46,25 +45,25 @@ object frmMain: TfrmMain
           MinWidth = 52
           Options = [coEnabled, coParentBidiMode, coParentColor, coVisible, coFixed, coUseCaptionAlignment]
           Position = 0
-          Width = 62
+          Width = 52
         end      
         item
           CaptionAlignment = taCenter
           MinWidth = 300
           Options = [coAllowClick, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coSmartResize, coAllowFocus, coUseCaptionAlignment]
           Position = 1
-          Width = 1068
+          Width = 884
         end      
         item
           MaxWidth = 80
           Options = [coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring]
           Position = 2
           Text = 'idx'
-          Width = 52
+          Width = 10
         end>
-      Header.DefaultHeight = 36
+      Header.DefaultHeight = 29
       Header.Font.Style = [fsBold]
-      Header.Height = 36
+      Header.Height = 29
       Header.Options = [hoAutoResize, hoColumnResize, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoFullRepaintOnResize, hoHeaderClickAutoSort]
       Header.SortColumn = 0
       Header.Style = hsFlatButtons
@@ -90,13 +89,13 @@ object frmMain: TfrmMain
     end
     object ProgressBar1: TProgressBar
       Left = 0
-      Height = 10
-      Top = 401
-      Width = 1182
+      Height = 0
+      Top = 322
+      Width = 946
       Align = alBottom
       Anchors = [akTop, akRight, akBottom]
       Color = clWhite
-      Constraints.MaxHeight = 6
+      Constraints.MaxHeight = 5
       ParentColor = False
       Smooth = True
       TabOrder = 1
@@ -105,17 +104,17 @@ object frmMain: TfrmMain
   object StatusBar1: TStatusBar
     Left = 0
     Height = 32
-    Top = 411
-    Width = 1182
+    Top = 322
+    Width = 946
     AutoSize = False
     Color = cl3DLight
     Panels = <    
       item
         Alignment = taCenter
-        Width = 82
+        Width = 66
       end    
       item
-        Width = 240
+        Width = 192
       end>
     ParentColor = False
     SimplePanel = False
@@ -123,8 +122,8 @@ object frmMain: TfrmMain
     Visible = False
   end
   object MainMenu1: TMainMenu
-    left = 232
-    top = 8
+    Left = 186
+    Top = 6
     object MenuItemFile: TMenuItem
       Caption = '&File'
       object MenuItemNew: TMenuItem
@@ -239,13 +238,13 @@ object frmMain: TfrmMain
     end
   end
   object OpenDialog1: TOpenDialog
-    left = 400
-    top = 8
+    Left = 320
+    Top = 6
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
-    left = 184
-    top = 208
+    Left = 147
+    Top = 166
     object MenuItemPUAddFiles2Playlist: TMenuItem
       Action = actAddFilesToPlaylist
     end
@@ -272,19 +271,19 @@ object frmMain: TfrmMain
   object SaveDialog1: TSaveDialog
     FilterIndex = 0
     Options = [ofPathMustExist, ofEnableSizing, ofDontAddToRecent, ofViewDetail]
-    left = 512
-    top = 8
+    Left = 410
+    Top = 6
   end
   object TimerHideStatusbar: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = TimerHideStatusbarTimer
-    left = 548
-    top = 206
+    Left = 438
+    Top = 165
   end
   object ActionList1: TActionList
-    left = 136
-    top = 8
+    Left = 109
+    Top = 6
     object actNewFile: TAction
       Caption = 'Select files to add'
       OnExecute = actNewFileExecute
@@ -386,7 +385,7 @@ object frmMain: TfrmMain
     StartEmpty = False
     RootName = 'Application'
     ReadOnly = False
-    left = 921
-    top = 48
+    Left = 737
+    Top = 38
   end
 end
