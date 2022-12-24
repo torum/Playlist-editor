@@ -8,6 +8,19 @@ Playlist editor allow you to open iTunes txt/M3U/XSPF or create M3U/XSPF, edit a
 ### Editing:  
 Add, Remove, Rearrange order, Sort, Find & Replace and Edit path/URI.  
 
+### Screenshots:
+Windows
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png?raw=true)
+
+Ubuntu (gnome dark theme)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot2.png?raw=true)
+
+Ubuntu (gnome default theme)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot3.png?raw=true)
+  
+Ubuntu (Ubuntu default theme)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot4.png?raw=true)
+
 ### Required to run:    
 Windows/Linux. Otherwise, none.  
    
