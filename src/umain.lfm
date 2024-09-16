@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 1476
+  Left = 302
   Height = 374
-  Top = 629
+  Top = 275
   Width = 946
   ActiveControl = VirtualStringTree1
   Caption = ' Playlist Editer'
