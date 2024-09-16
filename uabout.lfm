@@ -1,19 +1,18 @@
 object frmAbout: TfrmAbout
   Left = 925
-  Height = 293
+  Height = 234
   Top = 654
-  Width = 400
+  Width = 320
   BorderStyle = bsToolWindow
-  ClientHeight = 293
-  ClientWidth = 400
-  DesignTimePPI = 120
+  ClientHeight = 234
+  ClientWidth = 320
   Position = poOwnerFormCenter
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '3.4.0.0'
   object Image1: TImage
-    Left = 24
-    Height = 113
-    Top = 24
-    Width = 113
+    Left = 19
+    Height = 90
+    Top = 19
+    Width = 90
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869635054000089504E47
       0D0A1A0A0000000D49484452000001000000010008060000005C72A866000000
@@ -695,56 +694,57 @@ object frmAbout: TfrmAbout
     Proportional = True
   end
   object StaticTextAppsVer: TStaticText
-    Left = 168
-    Height = 21
-    Top = 72
-    Width = 121
+    Left = 134
+    Height = 16
+    Top = 58
+    Width = 95
     AutoSize = True
     Caption = 'StaticTextAppsVer'
     TabOrder = 0
+    OnClick = StaticTextAppsVerClick
   end
   object StaticTextWho: TStaticText
-    Left = 256
-    Height = 21
-    Top = 104
-    Width = 96
+    Left = 205
+    Height = 16
+    Top = 83
+    Width = 76
     AutoSize = True
     Caption = 'StaticTextWho'
     TabOrder = 1
   end
   object StaticTextWebSite: TStaticText
-    Left = 32
-    Height = 21
-    Top = 180
-    Width = 351
-    Caption = 'https://github.com/torumyax/'
+    Left = 26
+    Height = 17
+    Top = 144
+    Width = 281
+    Caption = 'https://github.com/torum/Playlist-editor'
+    TabOrder = 2
     OnClick = StaticTextWebSiteClick
     OnMouseEnter = StaticTextWebSiteMouseEnter
     OnMouseLeave = StaticTextWebSiteMouseLeave
-    TabOrder = 2
   end
   object LabelWebsite: TLabel
-    Left = 32
-    Height = 20
-    Top = 152
-    Width = 56
+    Left = 26
+    Height = 15
+    Top = 122
+    Width = 45
     Caption = 'Website:'
     ParentColor = False
   end
   object ButtonClose: TButton
-    Left = 280
-    Height = 31
-    Top = 240
-    Width = 94
+    Left = 224
+    Height = 25
+    Top = 192
+    Width = 75
     Caption = 'Close'
     Default = True
     ModalResult = 1
     TabOrder = 3
   end
   object Bevel1: TBevel
-    Left = 24
-    Height = 7
-    Top = 216
-    Width = 351
+    Left = 19
+    Height = 6
+    Top = 173
+    Width = 281
   end
 end

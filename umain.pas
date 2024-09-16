@@ -272,7 +272,7 @@ type
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FstrAppVer:='ver 0.1.2 beta';
+  FstrAppVer:='ver 0.1.3 beta';
   Caption := ' Playlist Editor ';
   PanelContents.BringToFront;
   slMain:= TStringList.Create;
@@ -421,8 +421,8 @@ begin
   frmAbout.Caption:=' '+ReplaceStr(ExtractFileName(ParamStr(0)),ExtractFileExt(ParamStr(0)),'');
 
   frmAbout.StaticTextAppsVer.Caption := 'Playlist editor' + ' - ' + FstrAppVer;
-  frmAbout.StaticTextWho.Caption := 'by torumyax';
-  frmAbout.StaticTextWebSite.Caption:='https://github.com/torumyax/Playlist-editor';
+  frmAbout.StaticTextWho.Caption := 'by torum';
+  frmAbout.StaticTextWebSite.Caption:='https://torum.github.io/Playlist-editor/';
 
   frmAbout.ShowModal;
 

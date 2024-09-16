@@ -14,6 +14,7 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <DpiAware Value="True"/>
+        <LongPathAware Value="True"/>
         <TextName Value="witha.PlaylistEditer.PlaylistEditer"/>
         <TextDesc Value="Playlist editor/converter"/>
       </XPManifest>
@@ -21,9 +22,10 @@
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <RevisionNr Value="1"/>
+      <MinorVersionNr Value="1"/>
+      <RevisionNr Value="3"/>
       <BuildNr Value="1"/>
-      <StringTable ProductVersion="0.0.0.0"/>
+      <StringTable Comments="Playlist editor" FileDescription="Playlist editor" LegalTrademarks="torum" ProductName="Playlist Editor" ProductVersion="0.1.3.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>

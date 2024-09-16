@@ -20,6 +20,7 @@ type
     StaticTextAppsVer: TStaticText;
     StaticTextWho: TStaticText;
     StaticTextWebSite: TStaticText;
+    procedure StaticTextAppsVerClick(Sender: TObject);
     procedure StaticTextWebSiteClick(Sender: TObject);
     procedure StaticTextWebSiteMouseEnter(Sender: TObject);
     procedure StaticTextWebSiteMouseLeave(Sender: TObject);
@@ -41,6 +42,11 @@ implementation
 procedure TfrmAbout.StaticTextWebSiteClick(Sender: TObject);
 begin
   OpenURL(StaticTextWebSite.Caption);
+end;
+
+procedure TfrmAbout.StaticTextAppsVerClick(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmAbout.StaticTextWebSiteMouseEnter(Sender: TObject);

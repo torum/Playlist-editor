@@ -5,7 +5,7 @@ object frmMain: TfrmMain
   Width = 946
   ActiveControl = VirtualStringTree1
   Caption = ' Playlist Editer'
-  ClientHeight = 354
+  ClientHeight = 374
   ClientWidth = 946
   Color = clWhite
   Constraints.MinHeight = 96
@@ -17,20 +17,21 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poScreenCenter
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '3.4.0.0'
   object PanelContents: TPanel
     Left = 0
-    Height = 322
+    Height = 342
     Top = 0
     Width = 946
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 322
+    ClientHeight = 342
     ClientWidth = 946
+    ParentBackground = False
     TabOrder = 0
     object VirtualStringTree1: TVirtualStringTree
       Left = 0
-      Height = 322
+      Height = 337
       Top = 0
       Width = 946
       Align = alClient
@@ -89,8 +90,8 @@ object frmMain: TfrmMain
     end
     object ProgressBar1: TProgressBar
       Left = 0
-      Height = 0
-      Top = 322
+      Height = 5
+      Top = 337
       Width = 946
       Align = alBottom
       Anchors = [akTop, akRight, akBottom]
@@ -104,7 +105,7 @@ object frmMain: TfrmMain
   object StatusBar1: TStatusBar
     Left = 0
     Height = 32
-    Top = 322
+    Top = 342
     Width = 946
     AutoSize = False
     Color = cl3DLight
