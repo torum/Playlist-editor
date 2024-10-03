@@ -1,8 +1,8 @@
 ## Playlist editor/converter (Windows/Linux)
-Playlist editor allow you to open iTunes txt/M3U/XSPF or create M3U/XSPF, edit and save them as M3U/XSPF playlists. The aim is to ease the transfering of a media library from one computer to another.  
+Playlist editor allows you to open iTunes txt/M3U/XSPF, edit and save them as M3U/XSPF playlists. The aim is to ease the transfering of a media library from one computer to another.  
 
 ### Format convert
-- .txt(iTunes TSV)->.m3u/.xspf 
+- .txt(iTunes TSV) -> .m3u/.xspf 
 - .m3u <-> .xspf  
   
 ### Editing 
