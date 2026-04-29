@@ -21,16 +21,16 @@ Windows version can be downloaded from the [releases page](https://github.com/to
 
 ## Screenshots
 Windows
-![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot1.png)
 
 Ubuntu (gnome dark theme)
-![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot2.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot2.png)
 
 Ubuntu (gnome default theme)
-![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot3.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot3.png)
   
 Ubuntu (Ubuntu default theme)
-![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot4.png?raw=true)
+![alt text](https://github.com/torum/Playlist-editor/blob/master/files/bin/PlaylistEditorScreenshot4.png)
 
 ## Development
 
