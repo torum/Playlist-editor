@@ -1,3 +1,8 @@
+## This project is moved to a new repository.
+https://github.com/torum/PlaylistEditor
+
+The new project is a direct port of this Playlist-editor, which was originally developed in 2018 using ObjectPascal/Lazarus. This time, it has been rebuilt using C#/.NET and Avalonia UI.
+
 ## Playlist editor/converter (Windows/Linux)
 Playlist editor allows you to open iTunes txt/M3U/XSPF, edit and save them as M3U/XSPF playlists. The aim is to ease the transfering of a media library from one computer to another.  
 
