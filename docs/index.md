@@ -13,6 +13,14 @@ title: Playlist Editor
   
 
 ---------------------------------------
+### This project is moved to a new site.
+
+https://torum.github.io/PlaylistEditor/
+
+
+The new project is a direct port of this Playlist-editor, which was originally developed in 2018 using ObjectPascal/Lazarus. This time, it has been rebuilt using C#/.NET and Avalonia UI.
+
+
 ### Introduction  
 
 
